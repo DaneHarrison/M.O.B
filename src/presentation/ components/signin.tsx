@@ -1,16 +1,21 @@
+import axios from "axios";
 import { useRef, useState } from "react";
 
 const SignIn = (props: any) => {
   const [image, setImage] = useState();
   const userFace = useRef();
   const handleSubmit = (event:any) => {
+   
     event.preventDefault();
     alert(`The name you entered was: ${userFace.current.files[0].name}`)
+    const formData = new FormData();
+    formData.append("face",userFace.current.files[0])
+    axios.post("/api/")
   }
   ;
 
   return (
-    <form className="w-full max-w-xs" onSubmit={handleSubmit}>
+    <form className="flex flex-col" onSubmit={handleSubmit}>
       <input
         type="file"
         placeholder="choose file"
