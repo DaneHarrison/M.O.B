@@ -104,5 +104,12 @@ generally deployment and services go in the same file thanks to this
 #### clusterID = default
 
 <br>
+<hr>
 
 # Different YAML examples
+
+
+
+# Links:
+- https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/ (autoscale)
+- https://developer.ibm.com/tutorials/yaml-basics-and-usage-in-kubernetes/ (YAML)
