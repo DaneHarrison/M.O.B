@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mypv
+spec:
+  capacity:
+    storage: <Size>
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: slow
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /tmp
+    server: 172.17.0.2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: M.O.B-DBService1
+spec:
+  selector:
+    app: M.O.B
+  ports:
+  - Protocol: TCP  
+    port: 8082
+    targetPort: <Target Port>

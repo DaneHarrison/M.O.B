@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: M.O.B-deployment
+  labels:
+    app: M.O.B
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: M.O.B
+  template:
+    metadata:
+      labels:
+        app: M.O.B
+    spec: #blueprint for a deployment of a pod
+      containers:
+      - name: M.O.B
+        image: <Image>
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
