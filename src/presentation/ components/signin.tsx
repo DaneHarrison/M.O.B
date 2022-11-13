@@ -25,7 +25,7 @@ const SignIn = (props: any) => {
         className="input"
         ref={userFace}
       />
-      <input className="btn-primary btn " type="submit" />
+      <input className="btn-primary btn mt-3" type="submit" />
     </form>
   );
 };
