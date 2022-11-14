@@ -134,3 +134,6 @@ generally deployment and services go in the same file thanks to this
 - https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/ (YAML)
 - https://pwittrock.github.io/docs/tasks/configure-pod-container/configure-pod-configmap/ (ENV vars)
 - https://kubernetes.io/docs/reference/kubernetes-api/ (all things you can update)
+- https://kubernetes.io/docs/reference/kubectl/cheatsheet/ (cmds)
+
+Selectors help us in finding these items. You can think of a selector as a filter. We could label pods based on some attributes

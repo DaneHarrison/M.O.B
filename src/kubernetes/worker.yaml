@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: myapp
+  name: worker-config
 data:
   key: value
 ---
@@ -10,23 +10,38 @@ kind: Deployment
 metadata:
   name: worker-deployment
   labels:
-    app: M.O.B
+    app: worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: M.O.B
+      app: worker
   template:
     metadata:
       labels:
-        app: M.O.B
-    spec: #blueprint for a deployment of a pod
+        app: worker
+    spec:
       containers:
-      - name: M.O.B
-        image: <Image>
+      - name: worker
+        image: e28ee71655fd0f64e08e17af451b5bcae2880b170b120b15cd5c7ac5a2db75e5
+        imagePullPolicy: IfNotPresent
         resources:
           limits:
-            memory: "128Mi"
-            cpu: "500m"
+            memory: 128Mi
+            cpu: 500m
         ports:
         - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker-service
+  labels:
+    app: worker-service
+spec:
+  selector:
+    app: worker-service
+  ports:
+  - Protocol: TCP  
+    port: 5432
+    targetPort: 5432
