@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgresC-config
+  labels:
+    app: postgresC
+type: Opaque
+data:
+  POSTGRES_DB: <identifier>
+  POSTGRES_USER: <user>
+  POSTGRES_PASSWORD: <password>
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresC
+spec:
+  selector:
+    matchLabels:
+      app: postgresC
+  serviceName: postgresC
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgresC
+    spec:
+      containers:
+      - name: "postgresC"
+        image: "postgres:10.4"
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+          name: postgresC-config
+        volumeMounts:
+        - name: postgresC-data
+          mountPath: /sys/data
+      volumes:
+      - name: postgresC-data
+        persistentVolumeClaim:
+          claimName: dataVolume
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresC
+  labels:
+    app: postgresC
+spec:
+  selector:
+    app: postgresC
+  ports:
+  - Protocol: TCP  
+    port: 5434
+    targetPort: 5434

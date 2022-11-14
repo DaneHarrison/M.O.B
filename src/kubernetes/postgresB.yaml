@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgresB-config
+  labels:
+    app: postgresB
+type: Opaque
+data:
+  POSTGRES_DB: <identifier>
+  POSTGRES_USER: <user>
+  POSTGRES_PASSWORD: <password>
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresB
+spec:
+  selector:
+    matchLabels:
+      app: postgresB
+  serviceName: postgresB
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgresB
+    spec:
+      containers:
+      - name: postgresB
+        image: postgres:10.4
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+          name: postgresB-config
+        volumeMounts:
+        - name: postgresB-data
+          mountPath: /sys/data
+      volumes:
+      - name: postgresB-data
+        persistentVolumeClaim:
+          claimName: dataVolume
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresB
+  labels:
+    app: postgresB
+spec:
+  selector:
+    app: postgresB
+  ports:
+  - Protocol: TCP  
+    port: 5433
+    targetPort: 5433

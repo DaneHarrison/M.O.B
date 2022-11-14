@@ -8,20 +8,19 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: M.O.B-deployment
+  name: worker-deployment
   labels:
     app: M.O.B
 spec:
-  replicas: 2
+  replicas: 1
   selector:
-    type: LoadBalancer
     matchLabels:
       app: M.O.B
   template:
     metadata:
       labels:
         app: M.O.B
-    spec:
+    spec: #blueprint for a deployment of a pod
       containers:
       - name: M.O.B
         image: <Image>
@@ -31,5 +30,3 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 8080
----
-#ingres

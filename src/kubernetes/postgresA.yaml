@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgresA-config
+  labels:
+    app: M.O.B
+type: Opaque
+data:
+  POSTGRES_DB: <identifier>
+  POSTGRES_USER: <user>
+  POSTGRES_PASSWORD: <password>
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresA
+spec:
+  selector:
+    matchLabels:
+      app: M.O.B
+  serviceName: postgresA
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: M.O.B
+    spec:
+      containers:
+      - name: postgresA
+        image: postgres:10.4
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+          name: postgresA-config
+        volumeMounts:
+        - name: postgresA-data
+          mountPath: /sys/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: dataVolume
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresA-service
+  labels:
+    app: M.O.B
+spec:
+  selector:
+    app: postgresA
+  ports:
+  - Protocol: TCP  
+    port: 5432
+    targetPort: 5432

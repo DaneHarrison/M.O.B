@@ -132,3 +132,5 @@ generally deployment and services go in the same file thanks to this
 # Links:
 - https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/ (autoscale)
 - https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/ (YAML)
+- https://pwittrock.github.io/docs/tasks/configure-pod-container/configure-pod-configmap/ (ENV vars)
+- https://kubernetes.io/docs/reference/kubernetes-api/ (all things you can update)
