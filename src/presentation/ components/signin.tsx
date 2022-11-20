@@ -18,14 +18,14 @@ const SignIn = (props: any) => {
   };
 
   return (
-    <form className="flex flex-col" onSubmit={handleSubmit}>
+    <form className="flex flex-col justify-center w-7" onSubmit={handleSubmit}>
       <input
         type="file"
         placeholder="choose file"
-        className="input w-full max-w-xs"
+        className="input"
         ref={userFace}
       />
-      <input className="btn-primary btn" type="submit" />
+      <input className="btn-primary btn " type="submit" />
     </form>
   );
 };
