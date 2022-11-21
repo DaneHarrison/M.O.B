@@ -117,6 +117,7 @@ class Trainer:
         correct = 0
 
         for name in testing_names:
+            
             img = cv2.imread(testing_path+name, 0)
             img_col = np.array(img, dtype='float64').flatten() 
             img_col -= self.mean_vector
