@@ -20,7 +20,7 @@ class meanVector(Resource):
         for num in my_model.mean_vector:
             values.append(float(num))
 
-        return jsonify({'mean_vector':values})
+        return jsonify({'mean_vector':values, 'shape':'5600,1'})
 
 
 
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     #train the model
     path = '../../../res/trainingData/'
-    my_model = Trainer(height = 80, width = 70, num_images=320, img_path=path, debug=True, stats = True)
+    my_model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
     my_model.run_training()
 
     #run the app

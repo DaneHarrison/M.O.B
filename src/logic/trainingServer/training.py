@@ -6,10 +6,8 @@ import cv2
 class Trainer:
     
     #this initializes all the variables for the algorithm
-    def __init__(self, height, width, num_images, img_path, debug, stats):
+    def __init__(self, height, width, num_images, img_path):
 
-        self.stats = stats #this toggels the stats
-        self.debug = debug #this toggels the debug information
         self.height = height  #height of the training image
         self.width = width    #width of the training image
         self.num_images = num_images #number of training images
@@ -110,7 +108,7 @@ class Trainer:
         self.find_k()
         self.find_weights()
 
-    def test_model(self,):
+    def test_model(self, debug, stats):
         testing_path = '../../../res/testingData/'
         testing_names = os.listdir(testing_path)
         wrong = 0
@@ -129,7 +127,7 @@ class Trainer:
             idx = np.argmin(norm)
 
             #print debug data
-            if self.debug == True:
+            if debug == True:
                 print('================================================')
                 print(f'Shape of W {self.Weights.shape}')
                 print(f'Shape of mean col {self.mean_vector.shape}')
@@ -139,7 +137,7 @@ class Trainer:
                 print(f'shape of diff {diff.shape}')
                 print(f'shape or norms {norm.shape}')
                 print('================================================')
-                self.debug = False
+                debug = False
 
             #find number of correct and incorrect
             t_name = name.split('_')[1]
@@ -148,10 +146,10 @@ class Trainer:
             
             if t_name == x:
                 correct += 1
-                if self.stats == True: print(f'Correct! distance={norm[idx]}')
+                if stats == True: print(f'Correct! distance={norm[idx]}')
             else:
                 wrong += 1
-                if self.stats == True: print(f'Wrong! distance={norm[idx]}')
+                if stats == True: print(f'Wrong! distance={norm[idx]}')
 
         print(f'Correct = {correct} Wrong = {wrong}')
 
@@ -159,6 +157,6 @@ class Trainer:
 if __name__ == '__main__':
     path = '../../../res/trainingData/'
 
-    model = Trainer(height = 80, width = 70, num_images=320, img_path=path, debug=True, stats = True)
+    model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
     model.run_training()
-    model.test_model()
+    model.test_model(debug=True, stats=True)
