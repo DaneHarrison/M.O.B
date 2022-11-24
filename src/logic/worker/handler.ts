@@ -18,8 +18,18 @@ export default class Handler {
         conn.end();
     }
 
-    private _genNewRequest() {
+    //mean vector is the mean vector of all the training output
+    //eigenVectors have nothing to do with mean vector this is covarient matrix
+        //eigvenVectors 
+    private _genNewRequest() { //mean vector s 5600 x1
         //process face
+            //transpose mean/eigen matrix (from trainer)
+            //with image from server (input image)
+                //flatten
+                //multiply by transposed vector
+                //gives 136x1 matrix
+
+                //(136, 320) => 136 
         //put request into pending
         //send requests to DB
     }

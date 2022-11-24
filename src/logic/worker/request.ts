@@ -3,19 +3,20 @@ import ClosestFace from "./closestFace";
 import net from "net";
 
 export default class Request {
-    closest: ClosestFace | null;
+    processedImg: number;
     DBARes: DBResponse | null;
     DBBRes: DBResponse | null;
     DBCRes: DBResponse | null;
-    user: net.Socket;
+    closest: ClosestFace | null;
+
     
 
-    constructor(user: net.Socket) {
-        this.closest = null;
+    constructor(processedImg: number) {
+        this.processedImg = processedImg;
         this.DBARes = null;
         this.DBBRes = null;
         this.DBCRes = null;
-        this.user = user;
+        this.closest = null;
     }
 
 
