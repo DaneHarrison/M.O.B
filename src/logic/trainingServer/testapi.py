@@ -12,7 +12,7 @@ myshape = data['shape'].split(',')
 rows = int(myshape[0])
 cols = int(myshape[1])
 
-#read all the values of the matrix, convert them to flost and store them in a list
+#read all the values of the matrix, convert them to float and store them in a list
 myValues = [[int(x) for x in data['mean_vector']]]
 
 #recreate the matirx with the proper shape
