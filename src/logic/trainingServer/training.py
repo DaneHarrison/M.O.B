@@ -175,15 +175,20 @@ class Trainer:
 if __name__ == '__main__':
     path = '../../../res/trainingData/'
 
-    #model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
-    #model.run_training()
+    model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
+    model.run_training()
     #model.test_model(debug=False, stats=False)
 
+    #read the weights matrix and store in the data folder
+    W = model.Weights.transpose()
+    arr2 = W.tolist()
     
-    arr = np.array([[1,2,3],[4,5,6],[7,8,9]])
-    arr2 = arr.transpose().tolist()
-    
-    yo = json.dumps(arr2)
+    myJson = json.dumps(arr2)
+
+    dataPath = '../../persistance/data/'
+    f = open(dataPath+'weights.json', 'w')
+    f.write(myJson)
+    f.close()
     
 
     
