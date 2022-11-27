@@ -2,8 +2,6 @@
 //npx prisma db push --schema ./src/persistance/schema.prisma
 //npx prisma studio --schema ./src/persistance/schema.prisma
 
-// missing authentication tables
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,17 +12,8 @@ datasource db {
 }
 
 model User {
-  id 			    Int		@id @default(autoincrement())
-  eigenValue  Int
-  name        String
-  face        FaceVector?
-}
-
-model FaceVector {
-  user    User	@relation(fields: [userID], references: [id], onDelete: Cascade)
-  
-  userID 	Int		@unique
-  height  Int
-  width   Int
-  face    Int[]
+  ID 			  Int		@id @default(autoincrement())
+  Name      String
+  Weight    Int[]
+  Photo     Bytes[]
 }
