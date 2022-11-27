@@ -100,7 +100,7 @@ class Trainer:
 
         self.Weights = self.eVectors.transpose() * self.L  
 
-        #self.eVectors = self.eVectors.transpose()
+        self.eVectors = self.eVectors.transpose()
 
     #this method runs the training
     def run_training(self,):
@@ -131,7 +131,7 @@ class Trainer:
             img_col = np.reshape(img_col, (self.width*self.height, 1))  
             
             #transpose the evectors and multiply them with the image vector
-            S = self.eVectors.transpose() * img_col  
+            S = self.eVectors * img_col  
             
             #subtract the input image(S) from each column in the weight matrix
             diff = self.Weights - S
@@ -182,13 +182,27 @@ if __name__ == '__main__':
     #read the weights matrix and store in the data folder
     W = model.Weights.transpose()
     arr2 = W.tolist()
-    
     myJson = json.dumps(arr2)
 
     dataPath = '../../persistance/data/'
     f = open(dataPath+'weights.json', 'w')
     f.write(myJson)
     f.close()
-    
 
-    
+    #read the eVectors and store in the data foler
+    eV = model.eVectors
+    arr2 = eV.tolist()
+    myJson = json.dumps(arr2)
+
+    f = open(dataPath+'eVectors.json', 'w')
+    f.write(myJson)
+    f.close()
+
+    #read the mean vector and store it in the data folder
+    myMean = model.mean_vector
+    arr2 = myMean.tolist()
+    myJson = json.dumps(arr2)
+
+    f = open(dataPath+'meanVector.json', 'w')
+    f.write(myJson)
+    f.close()
