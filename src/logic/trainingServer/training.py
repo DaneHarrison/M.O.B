@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import cv2
-
+import json
 #This class trains the eigen faces model
 class Trainer:
     
@@ -100,6 +100,8 @@ class Trainer:
 
         self.Weights = self.eVectors.transpose() * self.L  
 
+        #self.eVectors = self.eVectors.transpose()
+
     #this method runs the training
     def run_training(self,):
         self.read_images()
@@ -116,14 +118,30 @@ class Trainer:
 
         for name in testing_names:
             
+            #read the input image in gray scale
             img = cv2.imread(testing_path+name, 0)
-            img_col = np.array(img, dtype='float64').flatten() 
-            img_col -= self.mean_vector
-            img_col = np.reshape(img_col, (self.width*self.height, 1))  
 
+            #flatten the input image
+            img_col = np.array(img, dtype='float64').flatten() 
+
+            #subtract the mean vector from the input image
+            img_col -= self.mean_vector 
+
+            #Reshape the image into a vector
+            img_col = np.reshape(img_col, (self.width*self.height, 1))  
+            
+            #transpose the evectors and multiply them with the image vector
             S = self.eVectors.transpose() * img_col  
-            diff = self.Weights - S   
-            norm = np.linalg.norm(diff, axis=0)
+            
+            #subtract the input image(S) from each column in the weight matrix
+            diff = self.Weights - S
+
+            #normalize each column in the matrix.
+            #normalize means sum all values in the column and 
+            #divide them by the number of values in the column
+            norm = np.linalg.norm(diff, axis=0) 
+            
+            #find the index of the smallest value 
             idx = np.argmin(norm)
 
             #print debug data
@@ -157,6 +175,15 @@ class Trainer:
 if __name__ == '__main__':
     path = '../../../res/trainingData/'
 
-    model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
-    model.run_training()
-    model.test_model(debug=True, stats=True)
+    #model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
+    #model.run_training()
+    #model.test_model(debug=False, stats=False)
+
+    
+    arr = np.array([[1,2,3],[4,5,6],[7,8,9]])
+    arr2 = arr.transpose().tolist()
+    
+    yo = json.dumps(arr2)
+    
+
+    
