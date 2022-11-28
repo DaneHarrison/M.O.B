@@ -189,11 +189,12 @@ if __name__ == '__main__':
     arr2 = W.tolist()
     myJson = json.dumps(arr2)
 
-    dataPath = '../../persistance/data/'
-    f = open(dataPath+'weights.json', 'w')
+    weightsPath = '../../persistance/prisma/seedData/'
+    f = open(weightsPath+'weights.json', 'w')
     f.write(myJson)
     f.close()
 
+    dataPath = '../../persistance/data/'
     #read the eVectors and store in the data foler
     eV = model.eVectors
     arr2 = eV.tolist()
