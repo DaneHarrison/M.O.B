@@ -2,6 +2,8 @@ import numpy as np
 import os
 import cv2
 import json
+import re
+
 #This class trains the eigen faces model
 class Trainer:
     
@@ -34,10 +36,15 @@ class Trainer:
         self.Weights = []
 
         #this list hold all the names of the training files
-        self.training_names = os.listdir(self.img_path)
-
+        self.training_names = self.sorted_alphanumeric(os.listdir(self.img_path))
+        
         #this vector holds the mean vector of L
         self.mean_vector = []
+
+    def sorted_alphanumeric(self, data):
+        convert = lambda text: int(text) if text.isdigit() else text.lower()
+        alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+        return sorted(data, key=alphanum_key)
 
     #this methods reads all the training images and add them to the L matrix
     def read_images(self,):
@@ -160,7 +167,6 @@ class Trainer:
             #find number of correct and incorrect
             t_name = name.split('_')[1]
             x = self.training_names[idx].split('_')[1]
-
             
             if t_name == x:
                 correct += 1
@@ -170,7 +176,6 @@ class Trainer:
                 if stats == True: print(f'Wrong! distance={norm[idx]}')
 
         print(f'Correct = {correct} Wrong = {wrong}')
-
 
 if __name__ == '__main__':
     path = '../../../res/trainingData/'
