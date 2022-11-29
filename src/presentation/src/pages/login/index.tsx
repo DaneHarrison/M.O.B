@@ -1,7 +1,14 @@
 import Head from "next/head";
+import { useState } from "react";
+import Matches from "../../../ components/matches";
 import SignIn from "../../../ components/signin";
 
 const LoginPage = () => {
+    const [resultImages, setResultImages] = useState(null)
+
+    const addImages = (images:any)=>{
+        setResultImages(images)
+    }
     return (
         <div>
             <Head>
@@ -10,7 +17,8 @@ const LoginPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <div className="flex h-screen justify-center items-center">
-                <SignIn />
+                <SignIn addImages={addImages}  />
+                <Matches images={resultImages} />
             </div>
         </div>
       );
