@@ -23,4 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 .venv
 .env
-src/persistance/prisma/DB
+src/persistance/faces/DB
+src/persistance/logs/DB

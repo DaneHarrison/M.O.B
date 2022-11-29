@@ -1,15 +1,18 @@
 from dotenv import load_dotenv
-from prisma.DB import Prisma
+from logs.DB import Prisma as logDB
+from faces.DB import Prisma as faceDB
 import os
 
 class DBAdapter:
     def __init__(self):
-        load_dotenv()       # Loads the .env file
-        self.DBA = Prisma() # Stored instance of Database A (default URL)
+        load_dotenv()           # Loads the .env file
+        self.DBA = faceDB()     # Creates an instance of Database A (default)
+        self.logDB = logDB()    # Creates an instance of Log Database
 
-        # Replaces default Database URL's from A to B and C respectively
-        self.DBB = Prisma( datasource = {'url': os.getenv('DB_B_URL')}) # Stored instance of Database B
-        self.DBC = Prisma( datasource = {'url': os.getenv('DB_C_URL')}) # Stored isntance of Database C
+        # Replaces default Database URL to B and C respectively
+        self.DBB = faceDB( datasource = {'url': os.getenv('DB_B_URL')})     # Creates an instance of Database B
+        self.DBC = faceDB( datasource = {'url': os.getenv('DB_C_URL')})     # Creates an instance of Database C
+
 
     def getDBA(self):
         return self.DBA
@@ -19,3 +22,6 @@ class DBAdapter:
 
     def getDBC(self):
         return self.DBC
+
+    def getLogDB(self):
+        return self.logDB

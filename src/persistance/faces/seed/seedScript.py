@@ -1,14 +1,12 @@
-import dbAdapter
-import asyncio
-import json
+import dbAdapter, asyncio, json
 
 person = 0
 index = 0 
 
 def main():
-    namesFile = open("./src/persistance/prisma/seedData/randomNames.json", "r")
-    photosFile = open("./src/persistance/prisma/seedData/fileManifest.json", "r")
-    weightsFile = open("./src/persistance/prisma/seedData/weights.json", "r")
+    namesFile = open("./src/persistance/faceDB/seed/randomNames.json", "r")
+    photosFile = open("./src/persistance/faceDB/seed/fileManifest.json", "r")
+    weightsFile = open("./src/persistance/faceDB/seed/weights.json", "r")
 
     names = json.loads(namesFile.read())
     photos = json.loads(photosFile.read())
