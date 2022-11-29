@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
-from vectorHolder import VectorHolder
 import threading, json
 
 app = Flask()     # Flask server instance
@@ -17,11 +16,12 @@ with open('src/logic/worker/data/meanVector.json', 'r') as meanVectorFile:
 class processImg(Resource):
     def get(self,):
         req = Request() # Processes images sent to the worker
+        photo = request.json  # Accesses photo sent in request (MIME type should be JSON)
         
         thread = threading.Thread(target=req.process, args=[photo, eVector, meanVector]) 
         thread.start()
 
-        return req.getResults()
+        return jsonify(req.getResults())
     
 api.add_resource(processImg, '/')
 app.run(host='localhost', port=3500, debug=True)

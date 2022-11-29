@@ -15,16 +15,14 @@ class Queries:
 
         await db.disconnect()
 
-    async def checkForPrevEntry() -> None:
-        await db.connect()
-        
-        # ...
+    async def checkForPrevEntry(photo, database) -> None:
+        await database.connect()
+        found = await database.entry.find_unique( where = {'Photo': photo})
+        await database.disconnect()
 
-        await db.disconnect()
+        return found
 
-    async def addEntry() -> None:
-        await db.connect()
-        
-        # ...
-
-        await db.disconnect()
+    async def addEntry(photo, database) -> None:
+        await database.connect()
+        await database.entry.create( data = {'Photo': photo})
+        await database.disconnect()
