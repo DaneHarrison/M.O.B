@@ -1,67 +1,82 @@
-import dbAdapter, asyncio, json
+import asyncio, json, sys, json
+from seedGlobals import SeedGlobals
 
-person = 0
-index = 0 
+sys.path.append('../../')
+from dbAdapter import DBAdapter
 
-def main():
-    namesFile = open("./src/persistance/faceDB/seed/randomNames.json", "r")
-    photosFile = open("./src/persistance/faceDB/seed/fileManifest.json", "r")
-    weightsFile = open("./src/persistance/faceDB/seed/weights.json", "r")
+async def main() -> None:
+    namesFile = open("./randomNames.json", "r")
+    photosFile = open("./fileManifest.json", "r")
+    weightsFile = open("./weights.json", "r")
 
     names = json.loads(namesFile.read())
     photos = json.loads(photosFile.read())
     weights = json.loads(weightsFile.read())
-    adapter = dbAdapter()
 
-    proceed = seedA(adapter, names, weights, photos)
-    if(proceed):
-        proceed = seedB(adapter, names, weights, photos)
-    if(proceed):
-        proceed = seedC(adapter, names, weights, photos)
+    adapter = DBAdapter()
+    globalVars = SeedGlobals()
+    isSeeded = await alreadySeeded(names, adapter)
 
-    namesFile.close()
-    photosFile.close()
-    weightsFile.close()
-
-    if(proceed):
-        print("\n[SUCCESS] all databases have been seeded...")
+    if(isSeeded):
+        print("[ERROR] database is already seeded")
     else:
-        print("\n[ERROR] problem encoutered while seeding databases...")
+        proceed = await seedA(adapter, globalVars, names, weights, photos)
+        if(proceed):
+            proceed = await seedB(adapter, globalVars, names, weights, photos)
+        if(proceed):
+            proceed = await seedC(adapter, globalVars, names, weights, photos)
+
+        namesFile.close()
+        photosFile.close()
+        weightsFile.close()
+
+        if(proceed):
+            print("\n[SUCCESS] all databases have been seeded...")
+        else:
+            print("\n[ERROR] problem encoutered while seeding databases...")
 
 
-def seedA(adapter, names, weights, photos):
+async def seedA(adapter, globalVars, names, weights, photos):
     print("Loading Database A...")
     db = adapter.getDBA()
     
-    return seed(db, names, weights, photos)
+    return await seed(db, globalVars, names, weights, photos)
     
-def seedB(adapter, names, weights, photos):
+async def seedB(adapter, globalVars, names, weights, photos):
     print("Loading Database B...")
     db = adapter.getDBB()
     
-    return seed(db, names, weights, photos)
+    return await seed(db, globalVars, names, weights, photos)
 
-def seedC(adapter, names, weights, photos):
+async def seedC(adapter, globalVars, names, weights, photos):
     print("Loading Database C...")
     db = adapter.getDBC()
     
-    return seed(db, names, weights, photos)
+    return await seed(db, globalVars, names, weights, photos)
 
-async def seed(db, names, weights, photos) -> None:
+async def alreadySeeded(names, adapter) -> None: ## do one here so it checks which ones need to be seeded
+    db = adapter.getDBA()
     await db.connect()
-    proceed = true
-    
+
+    results = await db.user.find_many()
+
+    await db.disconnect()
+
+    return results
+
+async def seed(db, globalVars, names, weights, photos) -> None:
+    await db.connect()
+
     for i in range(0, 100):
         proceed = await db.user.create( data = {
-            'Name': names[person],
-            'Weight': weights[index],
-            'Photo': photos[index]
+            'Name': names[globalVars.getPerson()],
+            'Weight': weights[globalVars.getIndex()],
+            'Photo': str(open("../../../../res/trainingData/" + photos[globalVars.getIndex()], "rb").read()),
         })
 
-        index +=1
-        if(index is not 0 and index % 8 == 0):  # since every user has 8 training photos each 8th photo is a new person
-            person += 1
-        if(not user or index >= len(photos)):
+        globalVars.incrIndex()
+        globalVars.checkIncrPerson()
+        if(not proceed or globalVars.getIndex() >= len(photos)):
             break
     
     await db.disconnect()
@@ -70,4 +85,4 @@ async def seed(db, names, weights, photos) -> None:
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

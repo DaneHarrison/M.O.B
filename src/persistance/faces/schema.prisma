@@ -18,5 +18,5 @@ model User {
     ID     Int     @id @default(autoincrement())
     Name   String
     Weight Int[]
-    Photo  Bytes[]
+    Photo  String
 }
