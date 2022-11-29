@@ -1,10 +1,11 @@
-import asyncio, json, sys, json
+import json, sys, json
 from seedGlobals import SeedGlobals
 
 sys.path.append('../../')
 from dbAdapter import DBAdapter
 
-async def main() -> None:
+
+def main():
     namesFile = open("./randomNames.json", "r")
     photosFile = open("./fileManifest.json", "r")
     weightsFile = open("./weights.json", "r")
@@ -15,16 +16,16 @@ async def main() -> None:
 
     adapter = DBAdapter()
     globalVars = SeedGlobals()
-    isSeeded = await alreadySeeded(names, adapter)
+    isSeeded = alreadySeeded(names, adapter)
 
     if(isSeeded):
         print("[ERROR] database is already seeded")
     else:
-        proceed = await seedA(adapter, globalVars, names, weights, photos)
+        proceed = seedA(adapter, globalVars, names, weights, photos)
         if(proceed):
-            proceed = await seedB(adapter, globalVars, names, weights, photos)
+            proceed = seedB(adapter, globalVars, names, weights, photos)
         if(proceed):
-            proceed = await seedC(adapter, globalVars, names, weights, photos)
+            proceed = seedC(adapter, globalVars, names, weights, photos)
 
         namesFile.close()
         photosFile.close()
@@ -36,39 +37,39 @@ async def main() -> None:
             print("\n[ERROR] problem encoutered while seeding databases...")
 
 
-async def seedA(adapter, globalVars, names, weights, photos):
+def seedA(adapter, globalVars, names, weights, photos):
     print("Loading Database A...")
     db = adapter.getDBA()
     
-    return await seed(db, globalVars, names, weights, photos)
+    return seed(db, globalVars, names, weights, photos)
     
-async def seedB(adapter, globalVars, names, weights, photos):
+def seedB(adapter, globalVars, names, weights, photos):
     print("Loading Database B...")
     db = adapter.getDBB()
     
-    return await seed(db, globalVars, names, weights, photos)
+    return seed(db, globalVars, names, weights, photos)
 
-async def seedC(adapter, globalVars, names, weights, photos):
+def seedC(adapter, globalVars, names, weights, photos):
     print("Loading Database C...")
     db = adapter.getDBC()
     
-    return await seed(db, globalVars, names, weights, photos)
+    return seed(db, globalVars, names, weights, photos)
 
-async def alreadySeeded(names, adapter) -> None: ## do one here so it checks which ones need to be seeded
+def alreadySeeded(names, adapter) -> None: ## do one here so it checks which ones need to be seeded
     db = adapter.getDBA()
-    await db.connect()
+    db.connect()
 
-    results = await db.user.find_many()
+    results = db.user.find_many()
 
-    await db.disconnect()
+    db.disconnect()
 
     return results
 
-async def seed(db, globalVars, names, weights, photos) -> None:
-    await db.connect()
+def seed(db, globalVars, names, weights, photos) -> None:
+    db.connect()
 
     for i in range(0, 100):
-        proceed = await db.user.create( data = {
+        proceed = db.user.create( data = {
             'Name': names[globalVars.getPerson()],
             'Weight': weights[globalVars.getIndex()],
             'Photo': str(open("../../../../res/trainingData/" + photos[globalVars.getIndex()], "rb").read()),
@@ -79,10 +80,10 @@ async def seed(db, globalVars, names, weights, photos) -> None:
         if(not proceed or globalVars.getIndex() >= len(photos)):
             break
     
-    await db.disconnect()
+    db.disconnect()
 
     return proceed
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()
