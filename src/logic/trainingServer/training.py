@@ -1,6 +1,8 @@
 import numpy as np
 import os
 import cv2
+import json
+import re
 
 #This class trains the eigen faces model
 class Trainer:
@@ -34,10 +36,15 @@ class Trainer:
         self.Weights = []
 
         #this list hold all the names of the training files
-        self.training_names = os.listdir(self.img_path)
-
+        self.training_names = self.sorted_alphanumeric(os.listdir(self.img_path))
+        
         #this vector holds the mean vector of L
         self.mean_vector = []
+
+    def sorted_alphanumeric(self, data):
+        convert = lambda text: int(text) if text.isdigit() else text.lower()
+        alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+        return sorted(data, key=alphanum_key)
 
     #this methods reads all the training images and add them to the L matrix
     def read_images(self,):
@@ -100,6 +107,8 @@ class Trainer:
 
         self.Weights = self.eVectors.transpose() * self.L  
 
+        self.eVectors = self.eVectors.transpose()
+
     #this method runs the training
     def run_training(self,):
         self.read_images()
@@ -116,14 +125,30 @@ class Trainer:
 
         for name in testing_names:
             
+            #read the input image in gray scale
             img = cv2.imread(testing_path+name, 0)
-            img_col = np.array(img, dtype='float64').flatten() 
-            img_col -= self.mean_vector
-            img_col = np.reshape(img_col, (self.width*self.height, 1))  
 
-            S = self.eVectors.transpose() * img_col  
-            diff = self.Weights - S   
-            norm = np.linalg.norm(diff, axis=0)
+            #flatten the input image
+            img_col = np.array(img, dtype='float64').flatten() 
+
+            #subtract the mean vector from the input image
+            img_col -= self.mean_vector 
+
+            #Reshape the image into a vector
+            img_col = np.reshape(img_col, (self.width*self.height, 1))  
+            
+            #transpose the evectors and multiply them with the image vector
+            S = self.eVectors * img_col  
+            
+            #subtract the input image(S) from each column in the weight matrix
+            diff = self.Weights - S
+
+            #normalize each column in the matrix.
+            #normalize means sum all values in the column and 
+            #divide them by the number of values in the column
+            norm = np.linalg.norm(diff, axis=0) 
+            
+            #find the index of the smallest value 
             idx = np.argmin(norm)
 
             #print debug data
@@ -142,7 +167,6 @@ class Trainer:
             #find number of correct and incorrect
             t_name = name.split('_')[1]
             x = self.training_names[idx].split('_')[1]
-
             
             if t_name == x:
                 correct += 1
@@ -153,10 +177,38 @@ class Trainer:
 
         print(f'Correct = {correct} Wrong = {wrong}')
 
-
 if __name__ == '__main__':
     path = '../../../res/trainingData/'
 
     model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
     model.run_training()
-    model.test_model(debug=True, stats=True)
+    #model.test_model(debug=False, stats=False)
+
+    #read the weights matrix and store in the data folder
+    W = model.Weights.transpose()
+    arr2 = W.tolist()
+    myJson = json.dumps(arr2)
+
+    weightsPath = '../../persistance/prisma/seedData/'
+    f = open(weightsPath+'weights.json', 'w')
+    f.write(myJson)
+    f.close()
+
+    dataPath = '../../persistance/data/'
+    #read the eVectors and store in the data foler
+    eV = model.eVectors
+    arr2 = eV.tolist()
+    myJson = json.dumps(arr2)
+
+    f = open(dataPath+'eVectors.json', 'w')
+    f.write(myJson)
+    f.close()
+
+    #read the mean vector and store it in the data folder
+    myMean = model.mean_vector
+    arr2 = myMean.tolist()
+    myJson = json.dumps(arr2)
+
+    f = open(dataPath+'meanVector.json', 'w')
+    f.write(myJson)
+    f.close()
