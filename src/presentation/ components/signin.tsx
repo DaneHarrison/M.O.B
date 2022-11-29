@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 const SignIn = (props: any) => {
   const [image, setImage] = useState("");
   const userFace = useRef();
+  const addImages = props.addImages;
   const handleSubmit = (event: any) => {
     event.preventDefault();
     //  alert(`The name you entered was: ${userFace.current.files[0].name}`);
@@ -12,7 +13,8 @@ const SignIn = (props: any) => {
     axios
       .post("/api/authenticate", formData)
       .then((res) => {
-        alert("File Upload success");
+       // alert("File Upload success");
+        addImages(res.data)
       })
       .catch((err) => alert("File Upload Error"));
   };
