@@ -16,5 +16,5 @@ datasource db {
 
 model Entry {
     ID     Int     @id @default(autoincrement())
-    Photo  Bytes[]
+    Photo  Bytes[] @unique
 }

@@ -74,7 +74,7 @@ class Request:
 # Returns:
 # A tuple that holds the ID (int) and database reference according to the smallest distance
 # --------------------------------
-    def calc_min_query_details(self):
+    def calc_min_query_details(self, distances):
         distances = [self.res_DBA.Distance, self.res_DBB.Distance, self.res_DBC.Distance]
         min_index = distances.index(min(distances))  
 

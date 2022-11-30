@@ -26,3 +26,11 @@ src/persistance/faces/DB
 src/persistance/logs/DB
 src/persistance/logs/__pycache__
 src/persistance/faces/__pycache__
+src/persistance/__pycache__/__init__.cpython-39.pyc
+src/persistance/faces/__pycache__/__init__.cpython-39.pyc
+test/integration/__pycache__/__init__.cpython-39.pyc
+test/integration/__pycache__/testRequest.cpython-39.pyc
+test/unit/__pycache__/__init__.cpython-39.pyc
+test/unit/__pycache__/testQueries.cpython-39.pyc
+test/unit/__pycache__/testRequest.cpython-39.pyc
+test/unit/__pycache__/testSeed.cpython-39.pyc
