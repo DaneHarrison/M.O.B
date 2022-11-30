@@ -3,7 +3,7 @@ import os
 import cv2
 import json
 import re
-
+#
 #This class trains the eigen faces model
 class Trainer:
     
