@@ -1,40 +1,63 @@
-import unittest
+import unittest, sys
+
+sys.path.append('../../src/logic/worker')
+sys.path.append('../../src/persistance')
+
+from request import Request
+from dbAdapter import DBAdapter
+from queries import Queries
 
 class Requests(unittest.TestCase):
     def test_default_values(self):
-        hi = 'hi'
-        self.assertEqual(hi, 'hi')
-        assert hi == 'hi'
-# default values
+        req = Request()
+
+        self.assertTrue(isinstance(req.db_adapter, DBAdapter))
+        self.assertTrue(isinstance(req.queries, Queries))
+        self.assertTrue(req.res_DBA == None)
+        self.assertTrue(req.res_DBB == None)
+        self.assertTrue(req.res_DBB == None)
+        self.assertTrue(req.closest == None)
 
 
-# compute_image_vector
+    def test_compute_image_vector_basic(self):
+        return
 
 
-# calc_min_query_details
-    # basic
-        #-smallest to littlelest 
-    # complex
-        #-mixed order
-        #-float included
-    # empty
-        #-None
-    # edge
-        #-same distance
+    def test_min_query_details_basic(self):
+        req = Request()
 
-    # def calc_min_query_details(self, distances):
-    #     distances = [self.res_DBA.Distance, self.res_DBB.Distance, self.res_DBC.Distance]
-    #     min_index = distances.index(min(distances))  
+        req.res_DBA = {"ID": 1, "Distance": 5}
+        req.res_DBB = {"ID": 5, "Distance": 15}
+        req.res_DBC = {"ID": 10, "Distance": 25}
+        bestRes = req.calc_min_query_details()
 
-    #     # Check which index was the smallest, that is the ID and database we want
-    #     if(min_index == 0):      # Choose database A
-    #         query_details = (self.res_DBA.ID, self.dbAdapter.get_DBA())
-    #     elif(min_index == 1):    # Choose database B
-    #         query_details = (self.res_DBB.ID, self.dbAdapter.get_DBB())
-    #     else:                   # Choose database C
-    #         query_details = (self.res_DBC.ID, self.dbAdapter.get_DBC())
+        self.assertEqual(bestRes[0], 1)
+        self.assertEqual(bestRes[1], req.db_adapter.get_DBA())
 
-    #     return query_details
+
+    def test_min_query_details_complex(self):
+        req = Request()
+
+        req.res_DBA = {"ID": 11, "Distance": 5}
+        req.res_DBB = {"ID": 2, "Distance": 2}
+        req.res_DBC = {"ID": 10, "Distance": 25}
+        bestRes = req.calc_min_query_details()
+
+        self.assertEqual(bestRes[0], 2)
+        self.assertEqual(bestRes[1], req.db_adapter.get_DBB())
+
+
+    def test_min_query_details_edge(self):
+        req = Request()
+
+        req.res_DBA = {"ID": 11, "Distance": 5}
+        req.res_DBB = {"ID": 2, "Distance": 5}
+        req.res_DBC = {"ID": 10, "Distance": 25}
+        bestRes = req.calc_min_query_details()
+
+        self.assertEqual(bestRes[0], 11)
+        self.assertEqual(bestRes[1], req.db_adapter.get_DBA())
+
 
 if __name__ == '__main__':
     import nose2

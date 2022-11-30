@@ -20,10 +20,10 @@ class Request:
     def __init__(self):
         self.db_adapter = DBAdapter()   # Holds each database reference
         self.queries = Queries()        # Holds the queries we want to perform against the databases
-        self.res_DBA = null             # Map results from Database A (ID, Distance)
-        self.res_DBB = null             # Map results from Database B (ID, Distance)
-        self.res_DBC = null             # Map results from Database C (ID, Distance)
-        self.closest = null             # Reduce results from closest user (Name, Photo)
+        self.res_DBA = None             # Map results from Database A (ID, Distance)
+        self.res_DBB = None             # Map results from Database B (ID, Distance)
+        self.res_DBC = None             # Map results from Database C (ID, Distance)
+        self.closest = None             # Reduce results from closest user (Name, Photo)
 
 
 # --------------------------------
@@ -74,17 +74,17 @@ class Request:
 # Returns:
 # A tuple that holds the ID (int) and database reference according to the smallest distance
 # --------------------------------
-    def calc_min_query_details(self, distances):
-        distances = [self.res_DBA.Distance, self.res_DBB.Distance, self.res_DBC.Distance]
+    def calc_min_query_details(self):
+        distances = [self.res_DBA["Distance"], self.res_DBB["Distance"], self.res_DBC["Distance"]]
         min_index = distances.index(min(distances))  
 
         # Check which index was the smallest, that is the ID and database we want
         if(min_index == 0):      # Choose database A
-            query_details = (self.res_DBA.ID, self.dbAdapter.get_DBA())
+            query_details = (self.res_DBA["ID"], self.db_adapter.get_DBA())
         elif(min_index == 1):    # Choose database B
-            query_details = (self.res_DBB.ID, self.dbAdapter.get_DBB())
+            query_details = (self.res_DBB["ID"], self.db_adapter.get_DBB())
         else:                   # Choose database C
-            query_details = (self.res_DBC.ID, self.dbAdapter.get_DBC())
+            query_details = (self.res_DBC["ID"], self.db_adapter.get_DBC())
 
         return query_details
 
