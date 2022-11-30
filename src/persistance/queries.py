@@ -22,8 +22,12 @@ class Queries:
 # --------------------------------
     def mapDB(self, db, processed_photo) -> None: # here we need the index [ID] and a distance [Distance]
         db.connect()
-        
-        # ...
+    #     db.query_first( # this 
+    # 'SELECT name, email FROM User WHERE id = ?',
+    # 'abc',
+    # model=UserInLogin,
+    #     'creaTE EXTENSION plpython3u;' # I think this needs to go into the DB script
+    #     # ...
 
         db.disconnect()
 

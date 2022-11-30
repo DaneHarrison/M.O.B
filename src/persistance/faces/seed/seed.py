@@ -31,7 +31,7 @@ def main():
 
     adapter = DBAdapter()                       # Holds references to the databases we would like to seed
     global_vars = SeedGlobals()                 # Holds an instance of our global variables (prisma does not play nice)
-    is_seeded = already_Seeded(names, adapter)  # A boolean that determines if we have already seeded the databases
+    is_seeded = already_seeded(adapter)  # A boolean that determines if we have already seeded the databases
 
     if(is_seeded):   # Dont do anything... its seeded already
         print("[ERROR] database is already seeded")
