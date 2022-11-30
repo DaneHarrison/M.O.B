@@ -58,7 +58,7 @@ class Request:
 # mean_vector: [int[]] Holds the mean vector (size 5600x1) used to determines which face is closest to the input image
 #
 # Returns:
-# a vector of size 5600 by 1 representing the processed input image to be used for comparison
+# a vector of size 5600x1 representing the processed input image to be used for comparison
 # --------------------------------
     def compute_image_vector(self, photo, e_vectors, mean_vector):
         img_col = numpy.array(img, dtype='float64').flatten()           # Flatten the input image
