@@ -5,7 +5,7 @@
 # Each request should include a stringified representation of an image and the name of the user
 # A worker will then process it using the Request class and return the results
 #
-# NOTE: all workers should be started from inside their worker directory
+# NOTE: all workers should be started from inside the worker directory
 # --------------------------------
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api

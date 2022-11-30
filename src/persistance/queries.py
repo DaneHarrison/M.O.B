@@ -57,7 +57,7 @@ class Queries:
 # --------------------------------
     def check_for_prev_entry(photo, database) -> None:
         database.connect()
-        found = database.user.find_unique( where = {'Photo': photo}) # Checks if this photo is already saved in our log database
+        found = database.entry.find_unique( where = {'Photo': photo}) # Checks if this photo is already saved in our log database
         database.disconnect()
 
         return found
@@ -72,5 +72,5 @@ class Queries:
 # --------------------------------
     def add_entry(photo, database) -> None:
         database.connect()
-        database.user.create( data = {'Photo': photo})
+        database.entry.create( data = {'Photo': photo})
         database.disconnect()
