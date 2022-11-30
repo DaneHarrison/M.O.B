@@ -1,53 +1,112 @@
-from src.persistance.dbAdapter import DBAdapter
-from src.persistance.queries import Queries
-import numpy, json 
+# --------------------------------
+# request (class)
+#
+# A request processes authentication requests delegated to a worker from the front facing server
+# This process involves:
+#   - Verifying that this particular image has not been recieved before with a log database (to prevent replay attacks)
+#   - Input image processing
+#   - Maping the processed image to the closest user from each database
+#   - Selecting the overall closest user
+#   - Reduces the query to that single user
+#   - Saves the results
+# --------------------------------
+import numpy, json, sys
+
+sys.path.append('../../persistance')
+from dbAdapter import DBAdapter
+from queries import Queries
 
 class Request:
     def __init__(self):
-        self.dbAdapter = DBAdapter()    # Holds each database reference
+        self.db_adapter = DBAdapter()   # Holds each database reference
         self.queries = Queries()        # Holds the queries we want to perform against the databases
-        self.resDBA = null              # Map results from Database A (ID, Distance)
-        self.resDBB = null              # Map results from Database B (ID, Distance)
-        self.resDBC = null              # Map results from Database C (ID, Distance)
+        self.res_DBA = null             # Map results from Database A (ID, Distance)
+        self.res_DBB = null             # Map results from Database B (ID, Distance)
+        self.res_DBC = null             # Map results from Database C (ID, Distance)
         self.closest = null             # Reduce results from closest user (Name, Photo)
 
 
-    def process(self, photo, eVector, meanVector):
-        if(self.isNewPhoto(photo)):
-            imageVector = self.computeImageVector(photo, eVector, meanVector) # manipulate our input image
+# --------------------------------
+# process
+# Is responsible for controlling the authentication process thats been delegated to the worker
+#
+# Parameters:
+# photo: [bytes] the input image we are using for authenticated
+# e_vectors: [int[][]] Holds the eVectors (size 5600x136) used to determine which face is closest to the input image
+# mean_vector: [int[]] Holds the mean vector (size 5600x1) used to determines which face is closest to the input image
+# --------------------------------
+    def process(self, photo, e_vectors, mean_vector):
+        if(self.is_new_photo(photo)):
+            image_vector = self.compute_image_vectors(photo, e_vectors, mean_vector) # manipulate our input image
 
             # Map each database to find the closest match for the input photo
-            self.resDBA = self.queries.mapDB(self.dbAdapter.getDBA())
-            self.resDBB = self.queries.mapDB(self.dbAdapter.getDBB())
-            self.resDBC = self.queries.mapDB(self.dbAdapter.getDBC())
+            self.res_DBA = self.queries.mapDB(self.dbAdapter.get_DBA(), image_vector)
+            self.res_DBB = self.queries.mapDB(self.dbAdapter.get_DBB(), image_vector)
+            self.res_DBC = self.queries.mapDB(self.dbAdapter.get_DBC(), image_vector)
             
-            self.queries.addEntry(photo, self.dbAdapter.getLogDB()) # Add photo to our log database
-            queryDetails = self.calcMinQueryDetails(minDist)        # Locate the smallest distance and its associated database
-            self.closest = self.queries.reduceDB(queryDetails)      # Query that database for the name and image of the user
+            self.queries.add_entry(photo, self.dbAdapter.get_LogDB()) # Add photo to our log database
+            query_details = self.calc_min_query_details()    # Locate the smallest distance and its associated database
+            self.closest = self.queries.reduceDB(query_details)      # Query that database for the name and image of the user
 
-    def computeImageVector(self, photo, eVector, meanVector):
+# --------------------------------
+# compute_image_vector
+# Manipulates the input image so that we can effectively compare it against our users
+#
+# Parameters:
+# photo: [bytes] the input image we are using for authenticated
+# e_vectors: [int[][]] Holds the eVectors (size 5600x136) used to determine which face is closest to the input image
+# mean_vector: [int[]] Holds the mean vector (size 5600x1) used to determines which face is closest to the input image
+#
+# Returns:
+# a vector of size 5600 by 1 representing the processed input image to be used for comparison
+# --------------------------------
+    def compute_image_vector(self, photo, e_vectors, mean_vector):
         img_col = numpy.array(img, dtype='float64').flatten()           # Flatten the input image
-        img_col -= meanVector                                           # Subtract the mean vector from the input image
+        img_col -= mean_vector                                          # Subtract the mean vector from the input image
         img_col = numpy.reshape(img_col, (self.width*self.height, 1))   # Reshape the image into a vector  
 
-        return eVector * img_col    # Multiply eVectors against the image vector
+        return e_vectors * img_col    # Multiply eVectors against the image vector to get the vector we need for comparison
 
-    def calcMinQueryDetails(self):
-        distances = [self.resDBA.Distance, self.resDBB.Distance, self.resDBC.Distance]
-        minIndex = distances.index(min(distances))  
+# --------------------------------
+# calc_min_query_details
+# Identifies the smallest distance and maps it to either DBA, DBB or DBC (depending on the index of that distance) 
+#
+# Returns:
+# A tuple that holds the ID (int) and database reference according to the smallest distance
+# --------------------------------
+    def calc_min_query_details(self):
+        distances = [self.res_DBA.Distance, self.res_DBB.Distance, self.res_DBC.Distance]
+        min_index = distances.index(min(distances))  
 
         # Check which index was the smallest, that is the ID and database we want
-        if(minIndex == 0):
-            queryDetails = (self.resDBA.ID, self.dbAdapter.getDBA())
-        elif(minIndex == 1):
-            queryDetails = (self.resDBB.ID, self.dbAdapter.getDBB())
-        else:
-            queryDetails = (self.resDBC.ID, self.dbAdapter.getDBC())
+        if(min_index == 0):      # Choose database A
+            query_details = (self.res_DBA.ID, self.dbAdapter.get_DBA())
+        elif(min_index == 1):    # Choose database B
+            query_details = (self.res_DBB.ID, self.dbAdapter.get_DBB())
+        else:                   # Choose database C
+            query_details = (self.res_DBC.ID, self.dbAdapter.get_DBC())
 
-        return queryDetails
+        return query_details
 
-    def getResults(self):
+# --------------------------------
+# get_results
+# Fetches the results for the finally processed request
+#
+# Returns:
+# The results to the authentication request - the name (string) and photo (bytes) of the closest user
+# --------------------------------
+    def get_results(self):
         return self.closest
 
-    def isNewPhoto(self, photo):
-        return self.queries.checkForPrevEntry(photo, self.dbAdapter.getLogDB()) == None
+# --------------------------------
+# is_new_photo
+# Checks if the current photo has already been used for authentication
+#
+# Parameters:
+# photo: [bytes] the input image we are using for authenticated
+#
+# Returns:
+# A boolean representing if that image has already been used for authentication
+# --------------------------------
+    def is_new_photo(self, photo):
+        return self.queries.check_for_prev_entry(photo, self.dbAdapter.get_logDB()) == None
