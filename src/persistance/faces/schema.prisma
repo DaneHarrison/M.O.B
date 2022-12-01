@@ -14,7 +14,7 @@ datasource db {
     url      = env("DB_A_URL")
 }
 
-model User {
+model UserFaces {
     userID     Int     @id @default(autoincrement())
     userName   String
     userWeight Int[]
