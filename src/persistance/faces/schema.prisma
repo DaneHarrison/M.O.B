@@ -18,5 +18,5 @@ model UserFaces {
     userID     Int     @id @default(autoincrement())
     userName   String
     userWeight Int[]
-    userPhoto  String
+    userPhoto  Bytes
 }
