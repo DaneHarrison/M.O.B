@@ -21,7 +21,7 @@ class seeddb:
         self.photo_path_location = './fileManifest.json'
 
         #location of the training images
-        self.training_photo_location = '../../../../res/trainingData/'
+        self.training_photo_location = '../../../res/trainingData/'
 
         #load all of the names
         with open(self.names_location, 'r') as names_file:

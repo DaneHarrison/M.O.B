@@ -7,4 +7,4 @@ ENV POSTGRES_DB=MOB
 ENV POSTGRES_USER=user
 ENV POSTGRES_PASSWORD=password
 
-EXPOSE 5432
+ADD createDB.sql /docker-entrypoint-initdb.d/
