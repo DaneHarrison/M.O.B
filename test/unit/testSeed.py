@@ -26,14 +26,14 @@ class Seed(unittest.TestCase):
         self.assertEqual(len(resultsC), 120)
 
         for result in resultsA:
-            self.assertTrue(instanceof(result.ID, int))
-            self.assertGreaterEqual(result.ID, 0)
+            self.assertTrue(instanceof(result["userID"], int))
+            self.assertGreaterEqual(result["userID"], 0)
 
-            self.assertTrue(instanceof(result.ID, []))
-            self.assertGreaterEqual(len(result.Weight), 0)
+            self.assertTrue(instanceof(result["userID"], []))
+            self.assertGreaterEqual(len(result["userWeight"]), 0)
 
-            self.assertTrue(instanceof(result.Name, str))
-            self.assertTrue(instanceof(result.Photo, str))
+            self.assertTrue(instanceof(result["Name"], str))
+            self.assertTrue(instanceof(result["Photo"], str))
 
         for result in resultsB:
             self.assertTrue(instanceof(result.ID, int))

@@ -149,9 +149,9 @@ def seed(db, global_vars, names, weights, photo_paths, max_photos) -> None:
     # For each database, store their users and information
     for i in range(0, max_photos):
         proceed = db.user.create( data = {
-            'Name': names[global_vars.get_person()],
-            'Weight': weights[global_vars.get_index()],
-            'Photo': str(open(TRAINING_PHOTO_LOCATION + photo_paths[global_vars.get_index()], "rb").read()),
+            'userName': names[global_vars.get_person()],
+            'userWeight': weights[global_vars.get_index()],
+            'userPhoto': str(open(TRAINING_PHOTO_LOCATION + photo_paths[global_vars.get_index()], "rb").read()),
         })
 
         global_vars.incr_index()
