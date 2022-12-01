@@ -1,25 +1,55 @@
+#==============================================
+#seed.py
+#
+#seed.py is responsible for connecting to each
+#database and seeding the initial data.
+#==============================================
+
 import psycopg2
 import json
 
 class seeddb:
     def __init__(self) -> None:
+
+        #location of the random names
         self.names_location = './randomNames.json'
+
+        #location of the weights matrix
         self.weights_location = './weights.json'
+
+        #location of the phots manifest
         self.photo_path_location = './fileManifest.json'
+
+        #location of the training images
         self.training_photo_location = '../../../../res/trainingData/'
 
+        #load all of the names
         with open(self.names_location, 'r') as names_file:
             self.names = json.load(names_file)
 
+        #load the weights matrix
         with open(self.weights_location, 'r') as weights_file:
             self.weights = json.load(weights_file)
 
+        #load the paths of all the photos
         with open(self.photo_path_location, 'r') as photo_path_files:
             self.photo_paths = json.load(photo_path_files)
 
         self.name_idx = 0
 
+    #=================================================
+    #run_seed(start, end, port)
+    #
+    #start: starting index of the photos
+    #end: ending index of the phots
+    #port: what port to connect on
+    #
+    #This function connects to each of the 3 databases
+    #and seed them with default data
+    #=================================================
     def run_seed(self, start, end, port):
+
+        #connection string
         con = psycopg2.connect(
             host='localhost',
             port=port,
@@ -28,28 +58,36 @@ class seeddb:
             password='password'
         )
 
-        cur = con.cursor()
-        id_start = 0
+        cur = con.cursor() #create a cursor in the database
+
+        id_start = 0 #initialize the id index
+
         for i in range(start, end):
             
+            #every 8 photos, increase the name index
+            #so the next 8 photos are labeled with a
+            #different name
             if i % 8 == 0:
                 self.name_idx += 1
             
+            #get the ith weight column from the weight matrix
             my_weights = self.weights[i]
-            for j in range(len(my_weights)):
-                my_weights[j] = int(my_weights[j])
 
+            #read the photo as binary
             my_photo = open(self.training_photo_location + self.photo_paths[i], "rb")
             my_photo = psycopg2.Binary(my_photo.read())
 
+            #build the insert query
             my_msg = f"BEGIN; insert into public.\"UserFaces\" values ({id_start}, '{self.names[self.name_idx]}', ARRAY{my_weights}, {my_photo}); COMMIT;"
             id_start += 1
             
+            #execute the insert query
             cur.execute(my_msg)
-        cur.execute("CREATE EXTENSION plpython3u;")
-        cur.close()
-        con.close()
 
+        #execute the create query to create the extension
+        cur.execute("CREATE EXTENSION plpython3u;")
+        cur.close()  #close the cursor
+        con.close()  #close the connection
 
     def seed(self,):
         self.run_seed(start = 0, end = 104, port = 5432)
@@ -59,10 +97,6 @@ class seeddb:
         self.run_seed(start = 208, end = 320, port = 5434)
         print("Database C seeded successfully!")
 
-
 if __name__ == '__main__':
-
     s = seeddb()
     s.seed()
-
-

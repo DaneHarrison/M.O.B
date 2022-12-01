@@ -11,12 +11,12 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = env("DB_A_URL")
+    url      = env("DB_C_URL")
 }
 
 model UserFaces {
     userID     Int     @id @default(autoincrement())
     userName   String
-    userWeight Int[]
+    userWeight Float[]
     userPhoto  Bytes
 }
