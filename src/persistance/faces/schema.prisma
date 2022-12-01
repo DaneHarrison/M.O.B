@@ -15,8 +15,8 @@ datasource db {
 }
 
 model User {
-    ID     Int     @id @default(autoincrement())
-    Name   String
-    Weight Int[]
-    Photo  String
+    userID     Int     @id @default(autoincrement())
+    userName   String
+    userWeight Int[]
+    userPhoto  String
 }
