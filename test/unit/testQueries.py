@@ -33,16 +33,23 @@ class Queries(unittest.TestCase):
         resultsB = queries.mapDB(adapter.connect_to_DBB(), processed_photo)
         resultsC = queries.mapDB(adapter.connect_to_DBC(), processed_photo)
 
-        self.assertEqual(resultsA["ID"], '39')
-        self.assertEqual(resultsA["Distance"], '1194.6788829612085')
+        self.assertEqual(resultsA["ID"], 39)
+        self.assertEqual(resultsA["Distance"], 1194.6788829612085)
 
-        self.assertEqual(resultsB["ID"], '36')
-        self.assertEqual(resultsB["Distance"], '4236.122116229758')
+        self.assertEqual(resultsB["ID"], 36)
+        self.assertEqual(resultsB["Distance"], 4236.122116229758)
 
-        self.assertEqual(resultsC["ID"], '108')
-        self.assertEqual(resultsC["Distance"], '3163.126918052494')
+        self.assertEqual(resultsC["ID"], 108)
+        self.assertEqual(resultsC["Distance"], 3163.126918052494)
 
-        # now reduce db 2
+        resultsA = queries.reduceDB({"ID": 39, "DB": adapter.connect_to_DBA()})
+        resultsB = queries.reduceDB({"ID": 36, "DB": adapter.connect_to_DBB()})
+        resultsC = queries.reduceDB({"ID": 108, "DB": adapter.connect_to_DBC()})
+
+        self.assertEqual(resultsA["Name"], "Allan Santos")
+        self.assertEqual(resultsB["Name"], "Josh Cooley")
+        self.assertEqual(resultsC["Name"], "Keely Bradford")
+        
 
         img = cv2.imread(second_image, 0)
         img_col = np.array(img, dtype='float64').flatten()
@@ -56,16 +63,23 @@ class Queries(unittest.TestCase):
         resultsB = queries.mapDB(adapter.connect_to_DBB(), processed_photo)
         resultsC = queries.mapDB(adapter.connect_to_DBC(), processed_photo)
 
-        self.assertEqual(resultsA["ID"], '82')
-        self.assertEqual(resultsA["Distance"], '3128.435564785918')
+        self.assertEqual(resultsA["ID"], 82)
+        self.assertEqual(resultsA["Distance"], 3128.435564785918)
 
-        self.assertEqual(resultsB["ID"], '10')
-        self.assertEqual(resultsB["Distance"], '5364.219668292008')
+        self.assertEqual(resultsB["ID"], 10)
+        self.assertEqual(resultsB["Distance"], 5364.219668292008)
 
-        self.assertEqual(resultsC["ID"], '7')
-        self.assertEqual(resultsC["Distance"], '4533.552196276505')
+        self.assertEqual(resultsC["ID"], 7)
+        self.assertEqual(resultsC["Distance"], 4533.552196276505)
 
-        # now reduce db1
+        resultsA = queries.reduceDB({"ID": 82, "DB": adapter.connect_to_DBA()})
+        resultsB = queries.reduceDB({"ID": 10, "DB": adapter.connect_to_DBB()})
+        resultsC = queries.reduceDB({"ID": 7, "DB": adapter.connect_to_DBC()})
+
+        self.assertEqual(resultsA["Name"], "Johan Elliott")
+        self.assertEqual(resultsB["Name"], "Irene Elliott")
+        self.assertEqual(resultsC["Name"], "Melanie Jefferson")
+
 
         img = cv2.imread(third_image, 0)
         img_col = np.array(img, dtype='float64').flatten()
@@ -79,16 +93,23 @@ class Queries(unittest.TestCase):
         resultsB = queries.mapDB(adapter.connect_to_DBB(), processed_photo)
         resultsC = queries.mapDB(adapter.connect_to_DBC(), processed_photo)
 
-        self.assertEqual(resultsA["ID"], '11')
-        self.assertEqual(resultsA["Distance"], '2751.9057720045453')
+        self.assertEqual(resultsA["ID"], 11)
+        self.assertEqual(resultsA["Distance"], 2751.9057720045453)
 
-        self.assertEqual(resultsB["ID"], '13')
-        self.assertEqual(resultsB["Distance"], '3731.622787359892')
+        self.assertEqual(resultsB["ID"], 13)
+        self.assertEqual(resultsB["Distance"], 3731.622787359892)
 
-        self.assertEqual(resultsC["ID"], '45')
-        self.assertEqual(resultsC["Distance"], '4779.442387720476')
+        self.assertEqual(resultsC["ID"], 45)
+        self.assertEqual(resultsC["Distance"], 4779.442387720476)
 
-        # now reduce db 1
+        resultsA = queries.reduceDB({"ID": 11, "DB": adapter.connect_to_DBA()})
+        resultsB = queries.reduceDB({"ID": 13, "DB": adapter.connect_to_DBB()})
+        resultsC = queries.reduceDB({"ID": 45, "DB": adapter.connect_to_DBC()})
+
+        self.assertEqual(resultsA["Name"], "Yamilet Whitehead")
+        self.assertEqual(resultsB["Name"], "Irene Elliott")
+        self.assertEqual(resultsC["Name"], "Oliver Cochran")
+
 
         adapter.close_DBA()
         adapter.close_DBB()

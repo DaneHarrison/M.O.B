@@ -27,8 +27,8 @@ class DBQueries:
 
         cur.execute(f"SELECT find_min(ARRAY{processed_photo})")
         results = cur.fetchall()
-        rowID = results[0][0][1:-1].split(',')[0]
-        distance = results[0][0][1:-1].split(',')[1]
+        rowID = int(results[0][0][1:-1].split(',')[0])
+        distance = float(results[0][0][1:-1].split(',')[1])
         
         cur.close()
 

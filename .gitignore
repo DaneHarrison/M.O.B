@@ -50,3 +50,4 @@ src/logic/worker/__pycache__/request.cpython-39.pyc
 src/logic/trainingServer/__pycache__/training.cpython-39.pyc
 test/unit/__pycache__/testdb.cpython-39.pyc
 test/unit/__pycache__/testTrainer.cpython-39.pyc
+src/persistance/__pycache__/dbQueries.cpython-39.pyc
