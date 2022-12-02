@@ -14,12 +14,12 @@ import numpy, json, sys
 
 sys.path.append('../../persistance')
 from dbAdapter import DBAdapter
-from queries import Queries
+from dbQueries import DBQueries
 
 class Request:
     def __init__(self):
         self.db_adapter = DBAdapter()   # Holds each database reference
-        self.queries = Queries()        # Holds the queries we want to perform against the databases
+        self.queries = DBQueries()        # Holds the queries we want to perform against the databases
         self.res_DBA = None             # Map results from Database A (ID, Distance)
         self.res_DBB = None             # Map results from Database B (ID, Distance)
         self.res_DBC = None             # Map results from Database C (ID, Distance)
@@ -119,4 +119,4 @@ class Request:
 # A boolean representing if that image has already been used for authentication
 # --------------------------------
     def is_new_photo(self, photo):
-        return self.queries.check_for_prev_entry(photo, self.dbAdapter.connect_to_logs()) == None
+        return len(self.queries.check_for_prev_entry(photo, self.dbAdapter.connect_to_logs())) == 0

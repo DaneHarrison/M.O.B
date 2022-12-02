@@ -1,4 +1,4 @@
-import unittest, nose2, sys
+import unittest, psycopg2, nose2, sys, os
 
 sys.path.append('../../src/persistance')
 
@@ -18,24 +18,46 @@ class Queries(unittest.TestCase):
 #         print()     #-try pulling an invalid row
 
     
-    def test_add_entry(self):
+    def clearLogs(self):
+        con = psycopg2.connect(host=os.getenv('HOST'), port=os.getenv('DB_LOG_PORT'), database=os.getenv('DB'), user=os.getenv('USER'),password=os.getenv('PASSWORD'))
+        cur = con.cursor()
+
+        cur.execute("BEGIN; TRUNCATE TABLE public.\"Entry\"; COMMIT;")
+
+        cur.close()
+        con.close()
+
+    def test_mod_logs(self):
         adapter = DBAdapter()
         queries = DBQueries()
 
         test_img = '../../res/trainingData/1_1.jpg'
+        second_test_img = '../../res/trainingData/2_1.jpg'
+
+        self.clearLogs()
+        
+        logs = adapter.connect_to_logs()
+        results = queries.check_for_prev_entry(open(test_img, "rb").read(), logs)
+        self.assertEqual(len(results), 0)
+
+        queries.add_entry(open(test_img, "rb").read(), logs)
+        results = queries.check_for_prev_entry(open(test_img, "rb").read(), logs)
+        self.assertEqual(len(results), 1)
+
+        queries.add_entry(open(test_img, "rb").read(), logs)
+        results = queries.check_for_prev_entry(open(test_img, "rb").read(), logs)
+        self.assertEqual(len(results), 1)
 
         logs = adapter.connect_to_logs()
-        queries.check_for_prev_entry(open(test_img, "rb").read(), logs)
+        results = queries.check_for_prev_entry(open(second_test_img, "rb").read(), logs)
+        self.assertEqual(len(results), 0)
+
+        queries.add_entry(open(second_test_img, "rb").read(), logs)
+        results = queries.check_for_prev_entry(open(second_test_img, "rb").read(), logs)
+        self.assertEqual(len(results), 1)
 
         adapter.close_logs()
-    # try adding a new value
-    # try adding a duplicate value
-
-
-    def test_check_prev_entry(self):
-        print()
-    # its in there
-    # it is not in there
+        self.clearLogs()
 
 
 if __name__ == '__main__':

@@ -41,3 +41,7 @@ src/logic/worker/__pycache__/request.cpython-39.pyc
 src/logic/worker/__pycache__/request.cpython-39.pyc
 src/logic/worker/__pycache__/request.cpython-39.pyc
 test/unit/__pycache__/testDBAdapter.cpython-39.pyc
+src/persistance/__pycache__/dbQueries.cpython-39.pyc
+src/logic/worker/__pycache__/request.cpython-39.pyc
+src/logic/worker/__pycache__/request.cpython-39.pyc
+src/persistance/__pycache__/dbQueries.cpython-39.pyc

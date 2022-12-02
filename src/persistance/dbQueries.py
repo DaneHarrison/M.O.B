@@ -64,7 +64,7 @@ class DBQueries:
     def check_for_prev_entry(self, photo, connection):
         cur = connection.cursor()
 
-        cur.execute("SELECT entryID FROM public.\"Entry\" WHERE entryPhoto = %s", (psycopg2.Binary(photo)))
+        cur.execute("SELECT * FROM public.\"Entry\" WHERE \"Entry\".\"entryPhoto\" = %s", (psycopg2.Binary(photo), ))
         results = cur.fetchall()
         cur.close()
     
@@ -79,7 +79,7 @@ class DBQueries:
 # database: Holds a reference to the database we would like to use for the query
 # --------------------------------
     def add_entry(self, photo, connection):
-        cur = connection.cursor()
-
-        cur.execute("BEGIN; insert into public.\"Entry\" values (%s); COMMIT;", (psycopg2.Binary(photo)))
-        cur.close()
+        if(len(self.check_for_prev_entry(photo, connection)) == 0):
+            cur = connection.cursor()
+            cur.execute("BEGIN; insert into public.\"Entry\" (\"entryPhoto\") values (%s); COMMIT;", (psycopg2.Binary(photo), ))
+            cur.close()
