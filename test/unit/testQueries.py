@@ -3,7 +3,7 @@ import unittest, nose2, sys
 sys.path.append('../../src/persistance')
 
 from dbAdapter import DBAdapter
-from queries import Queries
+from dbQueries import DBQueries
 
 class Queries(unittest.TestCase):
     # def test_map_basic(self):
@@ -20,14 +20,14 @@ class Queries(unittest.TestCase):
     
     def test_add_entry(self):
         adapter = DBAdapter()
-        queries = Queries()
+        queries = DBQueries()
+
+        test_img = '../../res/trainingData/1_1.jpg'
 
         logs = adapter.connect_to_logs()
-
-
+        queries.check_for_prev_entry(open(test_img, "rb").read(), logs)
 
         adapter.close_logs()
-        print()
     # try adding a new value
     # try adding a duplicate value
 

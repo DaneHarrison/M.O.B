@@ -11,7 +11,6 @@ class Seed(unittest.TestCase):
         cur = con.cursor()
 
         cur.execute("BEGIN; TRUNCATE TABLE public.\"UserFaces\"; COMMIT;")
-        cur.execute("DROP EXTENSION plpython3u;")
 
         cur.close()
         con.close()

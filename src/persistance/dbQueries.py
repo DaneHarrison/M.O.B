@@ -10,7 +10,7 @@
 # --------------------------------
 import psycopg2
 
-class Queries:
+class DBQueries:
 # --------------------------------
 # mapDB
 # Maps the processed input photo to the closest users
@@ -61,7 +61,7 @@ class Queries:
 # Returns:
 # The results of the query: None if its a new request or the ID (int) and photo (bytes) if it was already used 
 # --------------------------------
-    def check_for_prev_entry(photo, connection):
+    def check_for_prev_entry(self, photo, connection):
         cur = connection.cursor()
 
         cur.execute("SELECT entryID FROM public.\"Entry\" WHERE entryPhoto = %s", (psycopg2.Binary(photo)))
@@ -78,7 +78,7 @@ class Queries:
 # photo: [bytes] the input image we would like to add to logs
 # database: Holds a reference to the database we would like to use for the query
 # --------------------------------
-    def add_entry(photo, connection):
+    def add_entry(self, photo, connection):
         cur = connection.cursor()
 
         cur.execute("BEGIN; insert into public.\"Entry\" values (%s); COMMIT;", (psycopg2.Binary(photo)))
