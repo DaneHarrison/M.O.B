@@ -117,16 +117,15 @@ class Trainer:
         self.find_k()
         self.find_weights()
 
-    def test_model(self, debug, stats):
-        testing_path = '../../../res/testingData/'
-        testing_names = os.listdir(testing_path)
+    def test_model(self, debug, stats, testpath):
+        testing_names = os.listdir(testpath)
         wrong = 0
         correct = 0
 
         for name in testing_names:
             
             #read the input image in gray scale
-            img = cv2.imread(testing_path+name, 0)
+            img = cv2.imread(testpath+name, 0)
 
             #flatten the input image
             img_col = np.array(img, dtype='float64').flatten() 
@@ -170,31 +169,31 @@ class Trainer:
             
             if t_name == x:
                 correct += 1
-                if stats == True: print(f'Correct! distance={norm[idx]}')
+                if stats == True: print(f'Correct! distance={norm[idx]}, index: {idx}, name: {name}')
             else:
                 wrong += 1
-                if stats == True: print(f'Wrong! distance={norm[idx]}')
+                if stats == True: print(f'Wrong! distance={norm[idx]}, index: {idx}, name: {name}')
 
         print(f'Correct = {correct} Wrong = {wrong}')
 
 if __name__ == '__main__':
     path = '../../../res/trainingData/'
-
+    testing_path = '../../../res/testingData/'
     model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
     model.run_training()
-    #model.test_model(debug=False, stats=False)
+    model.test_model(debug=True, stats=True, testpath=testing_path)
 
     #read the weights matrix and store in the data folder
     W = model.Weights.transpose()
     arr2 = W.tolist()
     myJson = json.dumps(arr2)
 
-    weightsPath = '../../persistance/prisma/seedData/'
+    weightsPath = '../../persistance/seed/'
     f = open(weightsPath+'weights.json', 'w')
     f.write(myJson)
     f.close()
 
-    dataPath = '../../persistance/data/'
+    dataPath = '../../logic/worker/data/'
     #read the eVectors and store in the data foler
     eV = model.eVectors
     arr2 = eV.tolist()
