@@ -7,21 +7,23 @@
 
 import psycopg2
 import json
+from dotenv import load_dotenv
 
-class seeddb:
-    def __init__(self) -> None:
+class seedDB:
+    def __init__(self, testPath="") -> None:
+        load_dotenv()           # Loads the .env file
 
         #location of the random names
-        self.names_location = './randomNames.json'
+        self.names_location = testPath + 'randomNames.json'
 
         #location of the weights matrix
-        self.weights_location = './weights.json'
+        self.weights_location = testPath + 'weights.json'
 
         #location of the phots manifest
-        self.photo_path_location = './fileManifest.json'
+        self.photo_path_location = testPath + 'fileManifest.json'
 
         #location of the training images
-        self.training_photo_location = '../../../res/trainingData/'
+        self.training_photo_location = testPath + '../../../res/trainingData/'
 
         #load all of the names
         with open(self.names_location, 'r') as names_file:
@@ -96,5 +98,5 @@ class seeddb:
         print("Database C seeded successfully!")
 
 if __name__ == '__main__':
-    s = seeddb()
+    s = seedDB()
     s.seed()

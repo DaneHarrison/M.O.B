@@ -1,26 +1,22 @@
-import unittest, sys
+import unittest, sys, nose2
 
 sys.path.append('../../src/logic/worker')
 sys.path.append('../../src/persistance')
 
 from request import Request
 from dbAdapter import DBAdapter
-from queries import Queries
+from dbQueries import DBQueries
 
 class Requests(unittest.TestCase):
     def test_default_values(self):
         req = Request()
 
         self.assertTrue(isinstance(req.db_adapter, DBAdapter))
-        self.assertTrue(isinstance(req.queries, Queries))
+        self.assertTrue(isinstance(req.queries, DBQueries))
         self.assertTrue(req.res_DBA == None)
         self.assertTrue(req.res_DBB == None)
         self.assertTrue(req.res_DBB == None)
         self.assertTrue(req.closest == None)
-
-
-    def test_compute_image_vector_basic(self):
-        return
 
 
     def test_min_query_details_basic(self):
@@ -32,7 +28,9 @@ class Requests(unittest.TestCase):
         bestRes = req.calc_min_query_details()
 
         self.assertEqual(bestRes[0], 1)
-        self.assertEqual(bestRes[1], req.db_adapter.get_DBA())
+        self.assertEqual(bestRes[1], req.db_adapter.connect_to_DBA())
+
+        req.db_adapter.close_DBA()
 
 
     def test_min_query_details_complex(self):
@@ -44,7 +42,9 @@ class Requests(unittest.TestCase):
         bestRes = req.calc_min_query_details()
 
         self.assertEqual(bestRes[0], 2)
-        self.assertEqual(bestRes[1], req.db_adapter.get_DBB())
+        self.assertEqual(bestRes[1], req.db_adapter.connect_to_DBB())
+
+        req.db_adapter.close_DBB()
 
 
     def test_min_query_details_edge(self):
@@ -56,9 +56,10 @@ class Requests(unittest.TestCase):
         bestRes = req.calc_min_query_details()
 
         self.assertEqual(bestRes[0], 11)
-        self.assertEqual(bestRes[1], req.db_adapter.get_DBA())
+        self.assertEqual(bestRes[1], req.db_adapter.connect_to_DBA())
+
+        req.db_adapter.close_DBA()
 
 
 if __name__ == '__main__':
-    import nose2
     nose2.main()  
