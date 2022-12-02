@@ -22,16 +22,17 @@ class DBQueries:
 # Returns:
 # A tuple of the mapped results (ID, Distance)
 # --------------------------------
-    def mapDB(self, db, processed_photo): # here we need the index [ID] and a distance [Distance]
-        db.connect()
-    #     db.query_first( # this 
-    # 'SELECT name, email FROM User WHERE id = ?',
-    # 'abc',
-    # model=UserInLogin,
-    #     'creaTE EXTENSION plpython3u;' # I think this needs to go into the DB script
-    #     # ...
+    def mapDB(self, connection, processed_photo): # here we need the index [ID] and a distance [Distance]
+        cur = connection.cursor()
 
-        db.disconnect()
+        cur.execute(f"SELECT find_min(ARRAY{processed_photo})")
+        results = cur.fetchall()
+        rowID = results[0][0][1:-1].split(',')[0]
+        distance = results[0][0][1:-1].split(',')[1]
+        
+        cur.close()
+
+        return {"ID": rowID, "Distance": distance}
 
 # --------------------------------
 # reduceDB
@@ -44,11 +45,19 @@ class DBQueries:
 # A tuple of the closest user (Name, Photo)
 # --------------------------------
     def reduceDB(self, query_details):
-        db.connect()
-        
-        # ...
+        name = None
+        photo = None
 
-        db.disconnect()
+        cur = query_details["DB"].cursor()
+        cur.execute("SELECT * FROM public.\"UserFaces\" WHERE \"UserFaces\".\"userID\" = %s", (query_details["ID"], ))
+        results = cur.fetchall()
+        cur.close()
+
+        for result in results:
+            name = result[1]
+            photo = result[3]
+
+        return {"Name": name, "Photo": photo}
 
 # --------------------------------
 # check_for_prev_entry

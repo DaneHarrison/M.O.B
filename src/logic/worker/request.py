@@ -72,7 +72,7 @@ class Request:
         img_col = numpy.reshape(img_col, (self.width*self.height, 1))   # Reshape the image into a vector  
 
         processed_image = e_vectors * img_col    # Multiply eVectors against the image vector to get the vector we need for comparison
-        processed_image = processed_image.reshape((1,len(S)))   # Puts processed_image it into a sendable format
+        processed_image = processed_image.reshape((1,len(processed_photo)))   # Puts processed_image it into a sendable format
         processed_image = str(processed_image.tolist())[1:-1]
 
         return processed_image
@@ -90,11 +90,11 @@ class Request:
 
         # Check which index was the smallest, that is the ID and database we want
         if(min_index == 0):      # Choose database A
-            query_details = (self.res_DBA["ID"], self.db_adapter.connect_to_DBA())
+            query_details = {"ID": self.res_DBA["ID"], "DB": self.db_adapter.connect_to_DBA()}
         elif(min_index == 1):    # Choose database B
-            query_details = (self.res_DBB["ID"], self.db_adapter.connect_to_DBB())
+            query_details = {"ID": self.res_DBB["ID"], "DB": self.db_adapter.connect_to_DBB()}
         else:                   # Choose database C
-            query_details = (self.res_DBC["ID"], self.db_adapter.connect_to_DBC())
+            query_details = {"ID": self.res_DBC["ID"], "DB": self.db_adapter.connect_to_DBC()}
 
         return query_details
 
