@@ -38,3 +38,6 @@ src/persistance/__pycache__/dbAdapter.cpython-39.pyc
 src/persistance/__pycache__/queries.cpython-39.pyc
 src/persistance/seed/__pycache__/seed.cpython-39.pyc
 src/logic/worker/__pycache__/request.cpython-39.pyc
+src/logic/worker/__pycache__/request.cpython-39.pyc
+src/logic/worker/__pycache__/request.cpython-39.pyc
+test/unit/__pycache__/testDBAdapter.cpython-39.pyc

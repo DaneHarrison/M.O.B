@@ -1,10 +1,13 @@
-import unittest, psycopg2, sys, os
+import unittest, psycopg2, sys, os, nose2
+
 sys.path.append('../../src/persistance/seed/')
+
 from seed import seedDB
+from dotenv import load_dotenv
 
 class Seed(unittest.TestCase):
     def clearDB(self, port):
-        con = psycopg2.connect(host='localhost', port=port, database='MOB', user='user',password='password')
+        con = psycopg2.connect(host=os.getenv('HOST'), port=port, database=os.getenv('DB'), user=os.getenv('USER'),password=os.getenv('PASSWORD'))
         cur = con.cursor()
 
         cur.execute("BEGIN; TRUNCATE TABLE public.\"UserFaces\"; COMMIT;")
@@ -44,13 +47,13 @@ class Seed(unittest.TestCase):
     def test_seed_A(self):
         seeder = seedDB('../../src/persistance/seed/')
 
-        self.clearDB(5432)
-        self.clearDB(5433)
-        self.clearDB(5434)
+        self.clearDB(os.getenv('DB_A_PORT'))
+        self.clearDB(os.getenv('DB_B_PORT'))
+        self.clearDB(os.getenv('DB_C_PORT'))
 
         seeder.seed()
 
-        con = psycopg2.connect(host='localhost', port=5432, database='MOB', user='user',password='password')
+        con = psycopg2.connect(host=os.getenv('HOST'), port=os.getenv('DB_A_PORT'), database=os.getenv('DB'), user=os.getenv('USER'),password=os.getenv('PASSWORD'))
         cur = con.cursor()
 
         cur.execute("select * from public.\"UserFaces\"")
@@ -75,13 +78,13 @@ class Seed(unittest.TestCase):
     def test_seed_B(self):
         seeder = seedDB('../../src/persistance/seed/')
 
-        self.clearDB(5432)
-        self.clearDB(5433)
-        self.clearDB(5434)
+        self.clearDB(os.getenv('DB_A_PORT'))
+        self.clearDB(os.getenv('DB_B_PORT'))
+        self.clearDB(os.getenv('DB_C_PORT'))
 
         seeder.seed()
 
-        con = psycopg2.connect(host='localhost', port=5433, database='MOB', user='user',password='password')
+        con = psycopg2.connect(host=os.getenv('HOST'), port=os.getenv('DB_B_PORT'), database=os.getenv('DB'), user=os.getenv('USER'),password=os.getenv('PASSWORD'))
         cur = con.cursor()
 
         cur.execute("select * from public.\"UserFaces\"")
@@ -106,13 +109,13 @@ class Seed(unittest.TestCase):
     def test_seed_C(self):
         seeder = seedDB('../../src/persistance/seed/')
 
-        self.clearDB(5432)
-        self.clearDB(5433)
-        self.clearDB(5434)
+        self.clearDB(os.getenv('DB_A_PORT'))
+        self.clearDB(os.getenv('DB_B_PORT'))
+        self.clearDB(os.getenv('DB_C_PORT'))
 
         seeder.seed()
 
-        con = psycopg2.connect(host='localhost', port=5434, database='MOB', user='user',password='password')
+        con = psycopg2.connect(host=os.getenv('HOST'), port=os.getenv('DB_C_PORT'), database=os.getenv('DB'), user=os.getenv('USER'),password=os.getenv('PASSWORD'))
         cur = con.cursor()
 
         cur.execute("select * from public.\"UserFaces\"")
@@ -139,13 +142,13 @@ class Seed(unittest.TestCase):
         weights = set()
         photos = set()
 
-        self.clearDB(5432)
-        self.clearDB(5433)
-        self.clearDB(5434)
+        self.clearDB(os.getenv('DB_A_PORT'))
+        self.clearDB(os.getenv('DB_B_PORT'))
+        self.clearDB(os.getenv('DB_C_PORT'))
 
         seeder.seed()
 
-        con = psycopg2.connect(host='localhost', port=5432, database='MOB', user='user',password='password')
+        con = psycopg2.connect(host=os.getenv('HOST'), port=os.getenv('DB_A_PORT'), database=os.getenv('DB'), user=os.getenv('USER'),password=os.getenv('PASSWORD'))
         cur = con.cursor()
 
         cur.execute("select * from public.\"UserFaces\"")
@@ -157,7 +160,7 @@ class Seed(unittest.TestCase):
             weights.add(''.join(str(e) for e in row[2]))
             photos.add(row[3])
 
-        con = psycopg2.connect(host='localhost', port=5433, database='MOB', user='user',password='password')
+        con = psycopg2.connect(host=os.getenv('HOST'), port=os.getenv('DB_B_PORT'), database=os.getenv('DB'), user=os.getenv('USER'),password=os.getenv('PASSWORD'))
         cur = con.cursor()
 
         cur.execute("select * from public.\"UserFaces\"")
@@ -169,7 +172,7 @@ class Seed(unittest.TestCase):
             weights.add(''.join(str(e) for e in row[2]))
             photos.add(row[3])
 
-        con = psycopg2.connect(host='localhost', port=5434, database='MOB', user='user',password='password')
+        con = psycopg2.connect(host=os.getenv('HOST'), port=os.getenv('DB_C_PORT'), database=os.getenv('DB'), user=os.getenv('USER'),password=os.getenv('PASSWORD'))
         cur = con.cursor()
 
         cur.execute("select * from public.\"UserFaces\"")
@@ -186,5 +189,5 @@ class Seed(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    import nose2
+    load_dotenv()           # Loads the .env file
     nose2.main()  

@@ -7,9 +7,11 @@
 
 import psycopg2
 import json
+from dotenv import load_dotenv
 
 class seedDB:
     def __init__(self, testPath="") -> None:
+        load_dotenv()           # Loads the .env file
 
         #location of the random names
         self.names_location = testPath + 'randomNames.json'

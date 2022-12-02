@@ -40,11 +40,11 @@ class Request:
             image_vector = self.compute_image_vectors(photo, e_vectors, mean_vector) # manipulate our input image
 
             # Map each database to find the closest match for the input photo
-            self.res_DBA = self.queries.mapDB(self.dbAdapter.get_DBA(), image_vector)
-            self.res_DBB = self.queries.mapDB(self.dbAdapter.get_DBB(), image_vector)
-            self.res_DBC = self.queries.mapDB(self.dbAdapter.get_DBC(), image_vector)
+            self.res_DBA = self.queries.mapDB(self.dbAdapter.connect_to_DBA(), image_vector)
+            self.res_DBB = self.queries.mapDB(self.dbAdapter.connect_to_DBB(), image_vector)
+            self.res_DBC = self.queries.mapDB(self.dbAdapter.connect_to_DBC(), image_vector)
             
-            self.queries.add_entry(photo, self.dbAdapter.get_LogDB()) # Add photo to our log database
+            self.queries.add_entry(photo, self.dbAdapter.connect_to_logs()) # Add photo to our log database
             query_details = self.calc_min_query_details()    # Locate the smallest distance and its associated database
             self.closest = self.queries.reduceDB(query_details)      # Query that database for the name and image of the user
 
@@ -65,7 +65,11 @@ class Request:
         img_col -= mean_vector                                          # Subtract the mean vector from the input image
         img_col = numpy.reshape(img_col, (self.width*self.height, 1))   # Reshape the image into a vector  
 
-        return e_vectors * img_col    # Multiply eVectors against the image vector to get the vector we need for comparison
+        processed_image = e_vectors * img_col    # Multiply eVectors against the image vector to get the vector we need for comparison
+        processed_image = processed_image.reshape((1,len(S)))   # Puts processed_image it into a sendable format
+        processed_image = str(processed_image.tolist())[1:-1]
+
+        return processed_image
 
 # --------------------------------
 # calc_min_query_details
@@ -80,11 +84,11 @@ class Request:
 
         # Check which index was the smallest, that is the ID and database we want
         if(min_index == 0):      # Choose database A
-            query_details = (self.res_DBA["ID"], self.db_adapter.get_DBA())
+            query_details = (self.res_DBA["ID"], self.db_adapter.connect_to_DBA())
         elif(min_index == 1):    # Choose database B
-            query_details = (self.res_DBB["ID"], self.db_adapter.get_DBB())
+            query_details = (self.res_DBB["ID"], self.db_adapter.connect_to_DBB())
         else:                   # Choose database C
-            query_details = (self.res_DBC["ID"], self.db_adapter.get_DBC())
+            query_details = (self.res_DBC["ID"], self.db_adapter.connect_to_DBC())
 
         return query_details
 
