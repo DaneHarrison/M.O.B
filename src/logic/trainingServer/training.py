@@ -3,7 +3,7 @@ import os
 import cv2
 import json
 import re
-#
+import psycopg2
 #This class trains the eigen faces model
 class Trainer:
     
@@ -170,10 +170,10 @@ class Trainer:
             
             if t_name == x:
                 correct += 1
-                if stats == True: print(f'Correct! distance={norm[idx]}')
+                if stats == True: print(f'Correct! distance={norm[idx]}, index: {idx}, name: {name}')
             else:
                 wrong += 1
-                if stats == True: print(f'Wrong! distance={norm[idx]}')
+                if stats == True: print(f'Wrong! distance={norm[idx]}, index: {idx}, name: {name}')
 
         print(f'Correct = {correct} Wrong = {wrong}')
 
@@ -182,19 +182,19 @@ if __name__ == '__main__':
 
     model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
     model.run_training()
-    #model.test_model(debug=False, stats=False)
+    model.test_model(debug=True, stats=True)
 
     #read the weights matrix and store in the data folder
     W = model.Weights.transpose()
     arr2 = W.tolist()
     myJson = json.dumps(arr2)
 
-    weightsPath = '../../persistance/prisma/seedData/'
+    weightsPath = '../../persistance/seed/'
     f = open(weightsPath+'weights.json', 'w')
     f.write(myJson)
     f.close()
 
-    dataPath = '../../persistance/data/'
+    dataPath = '../../logic/worker/data'
     #read the eVectors and store in the data foler
     eV = model.eVectors
     arr2 = eV.tolist()
@@ -212,3 +212,64 @@ if __name__ == '__main__':
     f = open(dataPath+'meanVector.json', 'w')
     f.write(myJson)
     f.close()
+
+
+    test = False
+    if test == True:
+        testing_path = '../../../res/testingData/59_6.jpg'
+        img = cv2.imread(testing_path, 0)
+        img_col = np.array(img, dtype='float64').flatten()
+        img_col -= model.mean_vector 
+        img_col = np.reshape(img_col, (70*80, 1))  
+        S = model.eVectors * img_col 
+
+        S = S.reshape((1,len(S)))
+        S = str(S.tolist())[1:-1]
+
+        con = psycopg2.connect(
+            host='localhost',
+            port=5432,
+            database='MOB',
+            user='user',
+            password='password'
+        )
+
+        cur = con.cursor()
+        cur.execute(f"SELECT find_min(ARRAY{S})")
+
+        yo = cur.fetchall()
+        print(yo)
+        cur.close()
+        con.close()
+        print('#-------------------------------------------')
+        con = psycopg2.connect(
+            host='localhost',
+            port=5433,
+            database='MOB',
+            user='user',
+            password='password'
+        )
+
+        cur = con.cursor()
+        cur.execute(f"SELECT find_min(ARRAY{S})")
+
+        yo = cur.fetchall()
+        print(yo)
+        cur.close()
+        con.close()
+        print('#-------------------------------------------')
+        con = psycopg2.connect(
+            host='localhost',
+            port=5434,
+            database='MOB',
+            user='user',
+            password='password'
+        )
+
+        cur = con.cursor()
+        cur.execute(f"SELECT find_min(ARRAY{S})")
+
+        yo = cur.fetchall()
+        print(yo)
+        cur.close()
+        con.close()
