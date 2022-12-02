@@ -1,4 +1,4 @@
-import unittest, sys, requests
+import unittest, sys, requests, nose2
 
 sys.path.append('../../src/persistance')
 
@@ -14,5 +14,4 @@ class Front(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    import nose2
     nose2.main()  
