@@ -84,8 +84,6 @@ class seeddb:
             #execute the insert query
             cur.execute(my_msg)
 
-        #execute the create query to create the extension
-        cur.execute("CREATE EXTENSION plpython3u;")
         cur.close()  #close the cursor
         con.close()  #close the connection
 
