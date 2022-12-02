@@ -86,7 +86,6 @@ class seedDB:
             #execute the insert query
             cur.execute(my_msg)
 
-        #execute the create query to create the extension
         cur.close()  #close the cursor
         con.close()  #close the connection
 
