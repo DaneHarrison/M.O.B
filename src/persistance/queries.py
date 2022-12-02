@@ -8,6 +8,8 @@
 #   - Log database [logDB]:
 #       - This database uses the check_for_prev_entry and add_entry queries
 # --------------------------------
+import psycopg2
+
 class Queries:
 # --------------------------------
 # mapDB
@@ -20,7 +22,7 @@ class Queries:
 # Returns:
 # A tuple of the mapped results (ID, Distance)
 # --------------------------------
-    def mapDB(self, db, processed_photo) -> None: # here we need the index [ID] and a distance [Distance]
+    def mapDB(self, db, processed_photo): # here we need the index [ID] and a distance [Distance]
         db.connect()
     #     db.query_first( # this 
     # 'SELECT name, email FROM User WHERE id = ?',
@@ -41,7 +43,7 @@ class Queries:
 # Returns
 # A tuple of the closest user (Name, Photo)
 # --------------------------------
-    def reduceDB(self, query_details) -> None:
+    def reduceDB(self, query_details):
         db.connect()
         
         # ...
@@ -59,12 +61,14 @@ class Queries:
 # Returns:
 # The results of the query: None if its a new request or the ID (int) and photo (bytes) if it was already used 
 # --------------------------------
-    def check_for_prev_entry(photo, database) -> None:
-        database.connect()
-        found = database.entry.find_unique( where = {'Photo': photo}) # Checks if this photo is already saved in our log database
-        database.disconnect()
+    def check_for_prev_entry(photo, connection):
+        cur = connection.cursor()
 
-        return found
+        cur.execute("SELECT entryID FROM public.\"Entry\" WHERE entryPhoto = %s", (psycopg2.Binary(photo)))
+        results = cur.fetchall()
+        cur.close()
+    
+        return results
 
 # --------------------------------
 # add_entry
@@ -74,7 +78,8 @@ class Queries:
 # photo: [bytes] the input image we would like to add to logs
 # database: Holds a reference to the database we would like to use for the query
 # --------------------------------
-    def add_entry(photo, database) -> None:
-        database.connect()
-        database.entry.create( data = {'Photo': photo})
-        database.disconnect()
+    def add_entry(photo, connection):
+        cur = connection.cursor()
+
+        cur.execute("BEGIN; insert into public.\"Entry\" values (%s); COMMIT;", (psycopg2.Binary(photo)))
+        cur.close()

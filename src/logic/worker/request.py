@@ -48,6 +48,12 @@ class Request:
             query_details = self.calc_min_query_details()    # Locate the smallest distance and its associated database
             self.closest = self.queries.reduceDB(query_details)      # Query that database for the name and image of the user
 
+            # Close database connections
+            self.db_adapter.close_DBA()
+            self.db_adapter.close_DBB()
+            self.db_adapter.close_DBC()
+            self.db_adapter.close_logs()
+
 # --------------------------------
 # compute_image_vector
 # Manipulates the input image so that we can effectively compare it against our users
@@ -113,4 +119,4 @@ class Request:
 # A boolean representing if that image has already been used for authentication
 # --------------------------------
     def is_new_photo(self, photo):
-        return self.queries.check_for_prev_entry(photo, self.dbAdapter.get_logDB()) == None
+        return self.queries.check_for_prev_entry(photo, self.dbAdapter.connect_to_logs()) == None
