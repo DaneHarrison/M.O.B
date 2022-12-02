@@ -8,8 +8,6 @@
 #   - logDB: holds a history of previously submitted photos
 # --------------------------------
 from dotenv import load_dotenv
-from logs.DB import Prisma as logDB
-from faces.DB import Prisma as faceDB
 import os
 
 class DBAdapter:
