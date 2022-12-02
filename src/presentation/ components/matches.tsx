@@ -1,9 +1,13 @@
 const Matches = (props:any) => {
-    const images =
+    const images = props.resultImages
     return (
-        <div>
+        <>
+        {images&&(
            
-        </div>
+                <img src={images} />
+            
+        )}
+        </>
       );
 }
  

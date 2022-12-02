@@ -4,7 +4,7 @@ import Matches from "../../../ components/matches";
 import SignIn from "../../../ components/signin";
 
 const LoginPage = () => {
-    const [resultImages, setResultImages] = useState(null)
+    const [resultImages, setResultImages] = useState("")
 
     const addImages = (images:any)=>{
         setResultImages(images)
