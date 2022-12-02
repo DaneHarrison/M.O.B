@@ -13,7 +13,7 @@ from request import Request
 import threading, json
 
 HOST = 'localhost'                              # The workers address
-PORT = 3500                                     # The workers port
+PORT = 4000                                     # The workers port
 E_VECTOR_LOCATION = './data/eVectors.json'      # The location of the eVectors file
 MEAN_VECTOR_LOCATION = './data/meanVector.json' # The location of the meanVector file
 
@@ -41,4 +41,4 @@ class ProcessImg(Resource):
         return jsonify(req.get_results())  # responds to the front facing servers request
     
 api.add_resource(ProcessImg, '/')
-app.run(host='HOST', port=PORT, debug=True)
+app.run(host=HOST, port=PORT, debug=True)
