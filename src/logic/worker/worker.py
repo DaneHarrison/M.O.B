@@ -40,15 +40,14 @@ class ProcessImg(Resource):
         photo = numpy.fromstring(photo, numpy.uint8)
         req.process(photo, e_vectors, mean_vector)
         results = req.get_results()
-        print(results)
-        # Prepare matched image to be sent over JSON if this is a valid authentication request (not a replay attach)
-        if(results):  # If the sent image has never been recieved then we found the user to authenticate
-          print('gooooooood\n\n')
-          photo_in_base64 = base64.b64encode(results["Photo"])
-          photo_as_string = photo_in_base64.decode('utf-8')
 
-          json_results = json.dumps({"Name": results["Name"],"Photo": photo_as_string}, indent=2)
-        else:         # If the sent image has been previously used this is a replay attack
+        if(results):  # If this is a new picture for the system
+            photo_in_base64 = base64.b64encode(results["Photo"])
+            photo_as_string = photo_in_base64.decode('utf-8')
+
+            # Prepare matched image to be sent over JSON if this is a valid authentication request
+            json_results = json.dumps({"Name": results["Name"],"Photo": photo_as_string}, indent=2)
+        else:         # If the sent image has been previously seen we dont want to grant access to the user
           json_results = json.dumps({"Name": None,"Photo": None})
 
         return json_results  # responds to the front facing servers request
