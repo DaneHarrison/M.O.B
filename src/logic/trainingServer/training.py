@@ -241,7 +241,7 @@ if __name__ == '__main__':
     testing_path = '../../../res/testingData/'
     model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
     model.run_training()
-    model.test_model(debug=True, stats=True, testpath=testing_path)
+    #model.test_model(debug=True, stats=True, testpath=testing_path)
 
     #read the weights matrix and store in the data folder
     W = model.Weights.transpose()
