@@ -3,11 +3,25 @@ import os
 import cv2
 import json
 import re
-
-#This class trains the eigen faces model
+#---------------------------------------------------
+# Trainer (class)
+#
+#Trainer uses a set of training images and used the eigen faces algorithm to build a model.
+#This process involves:
+#   - Reading each input images as a grayscale flattened vector
+#   - Creating a matrix, where each column in the matrix is a flattened image
+#   - Calcualting the mean column of the matrix
+#   - Subtracting the mean column from each column in the matrix
+#   - Calculating the Covarience matrix of the above matrix
+#   - Calcualting eigen values and eigen vectors of the covarience matrix
+#   - Ordering the eigen vectors according to their corresponding eigen values
+#   - Determining the top N eigen vectors that make up 95% of the difference
+#   - Calcualting the Weights of the eigen vectors
+#   - Saving the model informaiton in json format 
+#---------------------------------------------------
 class Trainer:
     
-    #this initializes all the variables for the algorithm
+    #this initializes all the variables
     def __init__(self, height, width, num_images, img_path):
 
         self.height = height  #height of the training image
@@ -41,40 +55,65 @@ class Trainer:
         #this vector holds the mean vector of L
         self.mean_vector = []
 
+    #---------------------------------
+    #sorted_alphanumeric(self, data)
+    #
+    #This methods receives a list containing strings and sorts them in sorted alphanumeric order
+    #---------------------------------
     def sorted_alphanumeric(self, data):
         convert = lambda text: int(text) if text.isdigit() else text.lower()
         alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
         return sorted(data, key=alphanum_key)
 
-    #this methods reads all the training images and add them to the L matrix
+    #--------------------------------
+    #read_images(self,)
+    #
+    #This methods reads all of the training images in grayscale using the open-cv library
+    #Then it flattens all of the images into a vectors and adds them as columns in the
+    #matrix L
+    #--------------------------------
     def read_images(self,):
-        
         index = 0
         for name in self.training_names:
             try:
                 image = cv2.imread(self.img_path+name,0) #0 reads the image in grayscale
             except:
                 print(f"Error while reading training images. File name = {name}")
-
             self.L[:,index] = np.array(image, dtype='float64').flatten()[:]
             index += 1
 
-    #this method subtracts the mean from each column in L
+    #--------------------------------
+    #subtract_mean_face(self,)
+    #
+    #This methods calculates the mean column from the matrix L
+    #Then it subtracts the mean column from every column in L
+    #--------------------------------
     def subtract_mean_face(self,):
         
         self.mean_vector = np.sum(self.L, axis=1) / self.num_images
         for i in range(self.num_images):
             self.L[:,i] -= self.mean_vector[:]
 
-    #this methods finds the covarience matrix and the corresponding eigen_values and vectors
+    #--------------------------------
+    #Covariance(self,)
+    #
+    #This methos calculates the covariance matrix of L
+    #Then it calcualtes the eigen values and eigen vectors of L
+    #--------------------------------
     def Covariance(self,):
         self.LTL = np.matrix(self.L.transpose()) * np.matrix(self.L)  
         self.LTL /= self.num_images
 
         self.eValues, self.eVectors = np.linalg.eig(self.LTL)
 
-    #this method orders the eigen values and eigen vectors in descending order
-    #then it finds the top K eigen values that make up 95% of the total sum
+    #--------------------------------
+    #find_k(self,)
+    #
+    #This method orders the eigenvectors according to their eigen values
+    #in descending order. Then it calcualtes the number of eigen values
+    #it takes to make up 95% of the sum of all eigen values. Then it 
+    #removes any eigen vectors that i not part of the 95%
+    #--------------------------------
     def find_k(self):
         sort_indices = self.eValues.argsort()[::-1]
 
@@ -93,7 +132,12 @@ class Trainer:
             else:
                 self.K += 1
 
-    #this method finds weights
+    #--------------------------------
+    #find_weights(self,)
+    #
+    #This method uses numpy to normalize the eigen vectors
+    #and calculates the weight of each eigen vector
+    #--------------------------------
     def find_weights(self,):
 
         #first reduce the number of eigen vectors and values to K
@@ -109,7 +153,12 @@ class Trainer:
 
         self.eVectors = self.eVectors.transpose()
 
-    #this method runs the training
+    #--------------------------------
+    #run_training(self,)
+    #
+    #This methods runs all the methods necessary to 
+    #train the model
+    #--------------------------------
     def run_training(self,):
         self.read_images()
         self.subtract_mean_face()
@@ -117,6 +166,17 @@ class Trainer:
         self.find_k()
         self.find_weights()
 
+    #--------------------------------
+    #test_model(self, degub, stats, testpath)
+    #
+    #This method received the following parameters:
+    #   - Degub: a boolean that determine if debug information if printed to console
+    #   - Stats: a boolean that determines if stats of each test are printed to console
+    #   - testpath: a string that contains the path of the test images
+    #
+    #This methods takes all of the test images privided and runs them
+    #against the model to determine its accuracy.
+    #--------------------------------
     def test_model(self, debug, stats, testpath):
         testing_names = os.listdir(testpath)
         wrong = 0
