@@ -10,7 +10,7 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from request import Request
-import threading, json
+import threading, json, base64, numpy
 
 HOST = 'localhost'                              # The workers address
 PORT = 4000                                     # The workers port
@@ -30,15 +30,21 @@ with open(MEAN_VECTOR_LOCATION, 'r') as mean_vector_file:
 
 # Adds the image processing route
 class ProcessImg(Resource):
-    def get(self,):
+    def post(self,):
         req = Request() # Processes images sent to the worker
-        photo = request.json  # Accesses photo sent in request (MIME type should be JSON)
+        photo = json.loads(request.json)
+        photo = photo["Photo"].encode('utf-8')
+        photo = base64.decodebytes(photo)
+        photo = numpy.fromstring(photo, numpy.uint8)
         
-        # start a new thread to handle the request
-        thread = threading.Thread(target=req.process, args=[photo, eVectors, meanVector])
-        thread.start()
+        req.process(photo, e_vectors, mean_vector)
+        results = req.get_results()
 
-        return jsonify(req.get_results())  # responds to the front facing servers request
+        photo_in_base64 = base64.b64encode(results["Photo"])
+        photo_as_string = photo_in_base64.decode('utf-8')
+        json_results = json.dumps({"Name": results["Name"],"Photo": photo_as_string}, indent=2)
+
+        return json_results  # responds to the front facing servers request
     
 api.add_resource(ProcessImg, '/')
 app.run(host=HOST, port=PORT, debug=True)

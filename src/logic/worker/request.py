@@ -10,7 +10,7 @@
 #   - Reduces the query to that single user
 #   - Saves the results
 # --------------------------------
-import numpy, json, sys
+import numpy, json, sys, base64, cv2
 
 sys.path.append('../../persistance')
 from dbAdapter import DBAdapter
@@ -37,14 +37,14 @@ class Request:
 # --------------------------------
     def process(self, photo, e_vectors, mean_vector):
         if(self.is_new_photo(photo)):
-            image_vector = self.compute_image_vectors(photo, e_vectors, mean_vector) # manipulate our input image
+            image_vector = self.compute_image_vector(photo, e_vectors, mean_vector) # manipulate our input image
 
             # Map each database to find the closest match for the input photo
-            self.res_DBA = self.queries.mapDB(self.dbAdapter.connect_to_DBA(), image_vector)
-            self.res_DBB = self.queries.mapDB(self.dbAdapter.connect_to_DBB(), image_vector)
-            self.res_DBC = self.queries.mapDB(self.dbAdapter.connect_to_DBC(), image_vector)
+            self.res_DBA = self.queries.mapDB(self.db_adapter.connect_to_DBA(), image_vector)
+            self.res_DBB = self.queries.mapDB(self.db_adapter.connect_to_DBB(), image_vector)
+            self.res_DBC = self.queries.mapDB(self.db_adapter.connect_to_DBC(), image_vector)
             
-            self.queries.add_entry(photo, self.dbAdapter.connect_to_logs()) # Add photo to our log database
+            #self.queries.add_entry(photo, self.dbAdapter.connect_to_logs()) # Add photo to our log database
             query_details = self.calc_min_query_details()    # Locate the smallest distance and its associated database
             self.closest = self.queries.reduceDB(query_details)      # Query that database for the name and image of the user
 
@@ -53,6 +53,8 @@ class Request:
             self.db_adapter.close_DBB()
             self.db_adapter.close_DBC()
             self.db_adapter.close_logs()
+
+            print('done?')
 
 # --------------------------------
 # compute_image_vector
@@ -67,12 +69,14 @@ class Request:
 # a vector of size 5600x1 representing the processed input image to be used for comparison
 # --------------------------------
     def compute_image_vector(self, photo, e_vectors, mean_vector):
-        img_col = numpy.array(img, dtype='float64').flatten()           # Flatten the input image
+        img_col = numpy.array(photo, dtype='float64').flatten()           # Flatten the input image
+        img_col = numpy.reshape(img_col, (5600, 1))
+        mean_vector = numpy.reshape(mean_vector, (5600, 1))
         img_col -= mean_vector                                          # Subtract the mean vector from the input image
-        img_col = numpy.reshape(img_col, (self.width*self.height, 1))   # Reshape the image into a vector  
+        img_col = numpy.reshape(img_col, (5600, 1))   # Reshape the image into a vector  
 
-        processed_image = e_vectors * img_col    # Multiply eVectors against the image vector to get the vector we need for comparison
-        processed_image = processed_image.reshape((1,len(processed_photo)))   # Puts processed_image it into a sendable format
+        processed_image = e_vectors @ img_col    # Multiply eVectors against the image vector to get the vector we need for comparison
+        processed_image = processed_image.reshape((1,len(processed_image)))   # Puts processed_image it into a sendable format
         processed_image = str(processed_image.tolist())[1:-1]
 
         return processed_image
@@ -119,4 +123,4 @@ class Request:
 # A boolean representing if that image has already been used for authentication
 # --------------------------------
     def is_new_photo(self, photo):
-        return len(self.queries.check_for_prev_entry(photo, self.dbAdapter.connect_to_logs())) == 0
+        return len(self.queries.check_for_prev_entry(photo, self.db_adapter.connect_to_logs())) == 0
