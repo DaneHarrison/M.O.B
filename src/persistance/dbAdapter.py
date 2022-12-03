@@ -7,26 +7,26 @@
 #   - DBC: holds the remaining users [27, 40)
 #   - logDB: holds a history of previously submitted photos
 #
-# NOTE: A connection can only be grabbed if the previous connection to that database was closed
+# NOTE: A new connection can only be grabbed if the previous connection to that database was closed
 # --------------------------------
 from dotenv import load_dotenv
 import psycopg2, os
 
 class DBAdapter:
     def __init__(self):
-        load_dotenv()           # Loads the .env file
-        self.DBA = None         # Holds a connection for Face Database DBA
-        self.DBB = None         # Holds a connection for Face Database DBB
-        self.DBC = None         # Holds a connection for Face Database DBC
-        self.logs = None        # Holds a connection for Log Database logs
+        load_dotenv()       # Loads the .env file
+        self.DBA = None     # Holds a connection for Face Database DBA
+        self.DBB = None     # Holds a connection for Face Database DBB
+        self.DBC = None     # Holds a connection for Face Database DBC
+        self.logs = None    # Holds a connection for Log Database logs
 
 
 # --------------------------------
-# get_DBA
-# Getter for reference to face database DBA
+# connect_to_DBA
+# Connects to database A unless there is already an ongoing connection, in which case, that connection is provided
 #
 # Returns:
-# A reference to face database DBA
+# A connection to face database DBA
 # --------------------------------
     def connect_to_DBA(self):
         if(not self.DBA):
@@ -35,11 +35,11 @@ class DBAdapter:
         return self.DBA
 
 # --------------------------------
-# get_DBB
-# Getter for reference to face database DBB
+# connect_to_DBB
+# Connects to database B unless there is already an ongoing connection, in which case, that connection is provided
 #
 # Returns:
-# A reference to face database DBB
+# A connection to face database DBB
 # --------------------------------
     def connect_to_DBB(self):
         if(not self.DBB):
@@ -48,11 +48,11 @@ class DBAdapter:
         return self.DBB
 
 # --------------------------------
-# get_DBC
-# Getter for reference to face database DBC
+# connect_to_DBC
+# Connects to database C unless there is already an ongoing connection, in which case, that connection is provided
 #
 # Returns:
-# A reference to face database DBC
+# A connection to face database DBC
 # --------------------------------
     def connect_to_DBC(self):
         if(not self.DBC):
@@ -61,11 +61,11 @@ class DBAdapter:
         return self.DBC
 
 # --------------------------------
-# get_logDB
-# Getter for reference to log database logDB
+# connect_to_logs
+# Connects to the log database unless there is already an ongoing connection, in which case, that connection is provided
 #
 # Returns:
-# A reference to log database logDB
+# A connection to log database
 # --------------------------------
     def connect_to_logs(self):
         if(not self.logs):
@@ -73,24 +73,40 @@ class DBAdapter:
         
         return self.logs
 
+# --------------------------------
+# close_DBA
+# Closes the connection to face database DBA if one currently exists
+# --------------------------------
     def close_DBA(self):
         if(self.DBA):
             self.DBA.close()
         
         self.DBA = None
 
+# --------------------------------
+# close_DBB
+# Closes the connection to face database DBB if one currently exists
+# --------------------------------
     def close_DBB(self):
         if(self.DBB):
             self.DBB.close()
         
         self.DBB = None
 
+# --------------------------------
+# close_DBC
+# Closes the connection to face database DBC if one currently exists
+# --------------------------------
     def close_DBC(self):
         if(self.DBC):
             self.DBC.close()
         
         self.DBC = None
 
+# --------------------------------
+# close_logs
+# Closes the connection to the log database if one currently exists
+# --------------------------------
     def close_logs(self):
         if(self.logs):
             self.logs.close()

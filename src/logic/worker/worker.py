@@ -17,8 +17,8 @@ PORT = 4000                                     # The workers port
 E_VECTOR_LOCATION = './data/eVectors.json'      # The location of the eVectors file
 MEAN_VECTOR_LOCATION = './data/meanVector.json' # The location of the meanVector file
 
-app = Flask(__name__) # Flask server instance
-api = Api(app)        # Controls the Flask server API
+app = Flask(__name__)  # Flask server instance
+api = Api(app)         # Controls the Flask server API
 e_vectors = None       # Holds the eVectors (size 5600x136) used to determine which face is closest to the input image
 mean_vector = None     # Holds the mean vector (size 5600x1) used to determines which face is closest to the input image
 
@@ -32,17 +32,22 @@ with open(MEAN_VECTOR_LOCATION, 'r') as mean_vector_file:
 class ProcessImg(Resource):
     def post(self,):
         req = Request() # Processes images sent to the worker
+        
+        # Read the raw image bytes from JSON and then start processing the authentication request
         photo = json.loads(request.json)
         photo = photo["Photo"].encode('utf-8')
         photo = base64.decodebytes(photo)
         photo = numpy.fromstring(photo, numpy.uint8)
-        
         req.process(photo, e_vectors, mean_vector)
         results = req.get_results()
 
-        photo_in_base64 = base64.b64encode(results["Photo"])
-        photo_as_string = photo_in_base64.decode('utf-8')
-        json_results = json.dumps({"Name": results["Name"],"Photo": photo_as_string}, indent=2)
+        # Prepare matched image to be sent over JSON if this is a valid authentication request (not a replay attach)
+        if(results):  # If the sent image has never been recieved then we found the user to authenticate
+          photo_in_base64 = base64.b64encode(results["Photo"])
+          photo_as_string = photo_in_base64.decode('utf-8')
+          json_results = json.dumps({"Name": results["Name"],"Photo": photo_as_string}, indent=2)
+        else:         # If the sent image has been previously used this is a replay attack
+          json_results = json.dumps({"Name": None,"Photo": None})
 
         return json_results  # responds to the front facing servers request
     
