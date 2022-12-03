@@ -44,7 +44,7 @@ class Request:
             self.res_DBB = self.queries.mapDB(self.db_adapter.connect_to_DBB(), image_vector)
             self.res_DBC = self.queries.mapDB(self.db_adapter.connect_to_DBC(), image_vector)
             
-            self.queries.add_entry(photo, self.dbAdapter.connect_to_logs()) # Add photo to our log database
+            self.queries.add_entry(photo, self.db_adapter.connect_to_logs()) # Add photo to our log database
             query_details = self.calc_min_query_details()           # Locate the smallest distance and its associated database
             self.closest = self.queries.reduceDB(query_details)     # Query that database for the name and image of the user
 

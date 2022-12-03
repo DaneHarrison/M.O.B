@@ -1,19 +1,19 @@
-import unittest, requests, sys, requests, nose2, json, base64, cv2, numpy, psycopg2, os
+import unittest, requests, sys, requests, nose2, json, base64, cv2, numpy, psycopg2
 
 sys.path.append('../../src/persistance')
 
 from dbAdapter import DBAdapter
-from dotenv import load_dotenv
 
 class Worker(unittest.TestCase):
     def clear_logs(self):
-        con = psycopg2.connect(host=os.getenv('HOST'), port=os.getenv('DB_LOG_PORT'), database=os.getenv('DB'), user=os.getenv('USER'),password=os.getenv('PASSWORD'))
+        con = psycopg2.connect(host='localhost', port=5435, database='MOB', user='user',password='password')
         cur = con.cursor()
 
         cur.execute("BEGIN; TRUNCATE TABLE public.\"Entry\"; COMMIT;")
 
         cur.close()
         con.close()
+
 
     def test_worker_api(self):
         photo = cv2.imread('../../res/testingData/9_1.jpg', 0)
@@ -23,11 +23,15 @@ class Worker(unittest.TestCase):
 
         res = requests.post('http://localhost:4000/', json = photo_as_json)
         res = json.loads(res.json())
-        self.clear_logs()
 
         self.assertEqual(res["Name"], 'Milo Wolfe')
 
+        res = requests.post('http://localhost:4000/', json = photo_as_json)
+        res = json.loads(res.json())
+        self.clear_logs()
+        
+        self.assertEqual(res["Name"], None)
+        
 
 if __name__ == '__main__':
-    load_dotenv()           # Loads the .env file
     nose2.main()  
