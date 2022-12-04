@@ -27,8 +27,8 @@ class Requests(unittest.TestCase):
         req.res_DBC = {"ID": 10, "Distance": 25}
         bestRes = req.calc_min_query_details()
 
-        self.assertEqual(bestRes[0], 1)
-        self.assertEqual(bestRes[1], req.db_adapter.connect_to_DBA())
+        self.assertEqual(bestRes["ID"], 1)
+        self.assertEqual(bestRes["DB"], req.db_adapter.connect_to_DBA())
 
         req.db_adapter.close_DBA()
 
@@ -41,8 +41,8 @@ class Requests(unittest.TestCase):
         req.res_DBC = {"ID": 10, "Distance": 25}
         bestRes = req.calc_min_query_details()
 
-        self.assertEqual(bestRes[0], 2)
-        self.assertEqual(bestRes[1], req.db_adapter.connect_to_DBB())
+        self.assertEqual(bestRes["ID"], 2)
+        self.assertEqual(bestRes["DB"], req.db_adapter.connect_to_DBB())
 
         req.db_adapter.close_DBB()
 
@@ -55,8 +55,8 @@ class Requests(unittest.TestCase):
         req.res_DBC = {"ID": 10, "Distance": 25}
         bestRes = req.calc_min_query_details()
 
-        self.assertEqual(bestRes[0], 11)
-        self.assertEqual(bestRes[1], req.db_adapter.connect_to_DBA())
+        self.assertEqual(bestRes["ID"], 11)
+        self.assertEqual(bestRes["DB"], req.db_adapter.connect_to_DBA())
 
         req.db_adapter.close_DBA()
 

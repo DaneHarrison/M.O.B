@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logs-service
+  labels:
+    app: logs-service
+spec:
+  selector:
+    app: logs
+  ports:
+  - name: logs
+    port: 5435
+    targetPort: 5435
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logs
+spec:
+  selector:
+    matchLabels:
+      app: logs-service
+  serviceName: logs-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: logs-service
+    spec:
+      containers:
+      - name: logs
+        image: logs
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5435

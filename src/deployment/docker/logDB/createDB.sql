@@ -7,7 +7,3 @@ create table "Entry"
 
 alter table "Entry"
     owner to "user";
-
-create unique index "Entry_entryPhoto_key"
-    on "Entry" ("entryPhoto");
-

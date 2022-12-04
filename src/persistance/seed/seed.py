@@ -1,8 +1,8 @@
 #==============================================
-#seed.py
+# seed.py (class)
 #
-#seed.py is responsible for connecting to each
-#database and seeding the initial data.
+# seed.py is responsible for connecting to each 
+# database and seeding the initial data.
 #==============================================
 
 import psycopg2
@@ -89,6 +89,10 @@ class seedDB:
         cur.close()  #close the cursor
         con.close()  #close the connection
 
+# --------------------------------
+# seed
+# Responsible for connecting to each database and seeding the initial data.
+# --------------------------------
     def seed(self,):
         self.run_seed(start = 0, end = 104, port = 5432)
         print("Database A seeded successfully!")

@@ -10,15 +10,15 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from request import Request
-import threading, json
+import threading, json, base64, numpy
 
 HOST = 'localhost'                              # The workers address
-PORT = 3500                                     # The workers port
+PORT = 4000                                     # The workers port
 E_VECTOR_LOCATION = './data/eVectors.json'      # The location of the eVectors file
 MEAN_VECTOR_LOCATION = './data/meanVector.json' # The location of the meanVector file
 
-app = Flask(__name__) # Flask server instance
-api = Api(app)        # Controls the Flask server API
+app = Flask(__name__)  # Flask server instance
+api = Api(app)         # Controls the Flask server API
 e_vectors = None       # Holds the eVectors (size 5600x136) used to determine which face is closest to the input image
 mean_vector = None     # Holds the mean vector (size 5600x1) used to determines which face is closest to the input image
 
@@ -30,15 +30,27 @@ with open(MEAN_VECTOR_LOCATION, 'r') as mean_vector_file:
 
 # Adds the image processing route
 class ProcessImg(Resource):
-    def get(self,):
+    def post(self,):
         req = Request() # Processes images sent to the worker
-        photo = request.json  # Accesses photo sent in request (MIME type should be JSON)
         
-        # start a new thread to handle the request
-        thread = threading.Thread(target=req.process, args=[photo, eVectors, meanVector])
-        thread.start()
+        # Read the raw image bytes from JSON and then start processing the authentication request
+        photo = json.loads(request.json)
+        photo = photo["Photo"].encode('utf-8')
+        photo = base64.decodebytes(photo)
+        photo = numpy.fromstring(photo, numpy.uint8)
+        req.process(photo, e_vectors, mean_vector)
+        results = req.get_results()
 
-        return jsonify(req.get_results())  # responds to the front facing servers request
+        if(results):  # If this is a new picture for the system
+            photo_in_base64 = base64.b64encode(results["Photo"])
+            photo_as_string = photo_in_base64.decode('utf-8')
+
+            # Prepare matched image to be sent over JSON if this is a valid authentication request
+            json_results = json.dumps({"Name": results["Name"],"Photo": photo_as_string}, indent=2)
+        else:         # If the sent image has been previously seen we dont want to grant access to the user
+          json_results = json.dumps({"Name": None,"Photo": None})
+
+        return json_results  # responds to the front facing servers request
     
 api.add_resource(ProcessImg, '/')
-app.run(host='HOST', port=PORT, debug=True)
+app.run(host=HOST, port=PORT, debug=True)
