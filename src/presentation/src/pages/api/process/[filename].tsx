@@ -71,9 +71,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     result = name 
   });
 
+   
   let optionsReq = {
     method: 'post',
-    url: 'http://127.0.0.1:5000/photo',
+    url: 'http://127.0.0.1:5000/',
     data: {
         Photo:result
     }
