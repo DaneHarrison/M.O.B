@@ -48,10 +48,7 @@ cd %rootDir%\src\deployment\docker\front
 "docker" "run" "-d" "--name" "front" "-p" "5000:5000" "front"
 echo front docker running
 
-
 REM Seed the db
 cd %rootDir%\src\persistance\seed
 "python" "seed.py"
 echo db seeded!
-
-
