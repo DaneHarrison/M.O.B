@@ -97,4 +97,3 @@ class DBQueries:
             cur = connection.cursor()
             cur.execute("BEGIN; insert into public.\"Entry\" (\"entryPhoto\") values (%s); COMMIT;", (psycopg2.Binary(photo), ))
             cur.close()
-            print('finished adding entry')

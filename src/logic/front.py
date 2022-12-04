@@ -14,7 +14,7 @@ URL = 'http://localhost:4000/'  # URL where the worker(s) can be reached
 
 app = Flask(__name__)   # Flask server instance
 api = Api(app)          # Controls the Flask server API 
-    
+  
 class ProcessImg(Resource):
     def post(self,):
         # Forward the request to a worker, once a response is recieved forward that back to the user

@@ -67,3 +67,6 @@ test/unit/__pycache__/testQueries.cpython-311.pyc
 test/unit/__pycache__/testRequest.cpython-311.pyc
 test/unit/__pycache__/testTrainer.cpython-311.pyc
 test/unit/__pycache__/testSeed.cpython-311.pyc
+src/persistance/__pycache__/dbQueries.cpython-39.pyc
+src/logic/trainingServer/__pycache__/training.cpython-39.pyc
+src/logic/worker/__pycache__/request.cpython-39.pyc

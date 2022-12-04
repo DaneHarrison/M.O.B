@@ -36,7 +36,7 @@ const SignIn = (props: any) => {
     fetch(`/api/process/${fileName}`)
       .then((response) => response.json())
       .then((data) => setByteString(data.result));
-    postData("http://localhost:5000/photo", byteString)
+    postData("http://localhost:5000/", byteString)
       .then((data) => console.log(data));
   };
 
