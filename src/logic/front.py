@@ -10,7 +10,7 @@ import threading, json, requests
 
 HOST = 'localhost'              # The front servers address
 PORT = 5000                     # The front servers port
-URL = 'http://localhost:4000/'  # URL where the worker(s) can be reached   
+URL = 'worker-service:4000'     # URL where the worker(s) can be reached   
 
 app = Flask(__name__)   # Flask server instance
 api = Api(app)          # Controls the Flask server API 
