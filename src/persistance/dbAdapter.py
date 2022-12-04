@@ -30,7 +30,7 @@ class DBAdapter:
 # --------------------------------
     def connect_to_DBA(self):
         if(not self.DBA):
-            self.DBA = psycopg2.connect(host='postgres-a-service', port=5432, database='MOB', user='user', password='password')
+            self.DBA = psycopg2.connect(host='http://postgres-a-service', port=5432, database='MOB', user='user', password='password')
         
         return self.DBA
 
@@ -43,7 +43,7 @@ class DBAdapter:
 # --------------------------------
     def connect_to_DBB(self):
         if(not self.DBB):
-            self.DBB = psycopg2.connect(host='postgres-b-service', port=5433, database='MOB', user='user', password='password')
+            self.DBB = psycopg2.connect(host='http://postgres-b-service', port=5433, database='MOB', user='user', password='password')
         
         return self.DBB
 
@@ -56,7 +56,7 @@ class DBAdapter:
 # --------------------------------
     def connect_to_DBC(self):
         if(not self.DBC):
-            self.DBC = psycopg2.connect(host='postgres-c-service', port=5434, database='MOB', user='user', password='password')
+            self.DBC = psycopg2.connect(host='http://postgres-c-service', port=5434, database='MOB', user='user', password='password')
         
         return self.DBC
 
@@ -69,7 +69,7 @@ class DBAdapter:
 # --------------------------------
     def connect_to_logs(self):
         if(not self.logs):
-            self.logs = psycopg2.connect(host='logs-service', port=5435, database='MOB', user='user', password='password')
+            self.logs = psycopg2.connect(host='http://logs-service', port=5435, database='MOB', user='user', password='password')
         
         return self.logs
 

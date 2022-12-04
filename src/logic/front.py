@@ -4,13 +4,13 @@
 # front is a server responsible for delegating authenticaation requests to workers
 # once a response is recieved, the response is then sent back to the user
 # --------------------------------
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_restful import Resource, Api
-import threading, json, requests
+import requests
 
 HOST = 'localhost'              # The front servers address
 PORT = 5000                     # The front servers port
-URL = 'worker-service:4000'     # URL where the worker(s) can be reached   
+URL = 'http://worker-service:4000'     # URL where the worker(s) can be reached   
 
 app = Flask(__name__)   # Flask server instance
 api = Api(app)          # Controls the Flask server API 

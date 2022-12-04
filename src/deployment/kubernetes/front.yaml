@@ -50,7 +50,7 @@ metadata:
     name: mob-ingress
 spec:
   rules:
-  - host: 'localhost'
+  - host: mob.com
     http:
       paths:
       - pathType: Prefix
