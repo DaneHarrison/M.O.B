@@ -1,40 +1,42 @@
 import axios from "axios";
-import { useRef, useState } from "react";
-import { createRef, PureComponent } from "react";
+import { ChangeEvent, useRef, useState } from "react";
+
 const SignIn = (props: any) => {
   const [image, setImage] = useState("");
-  const userFace = useRef(null);
+  const [fileName, setFileName] = useState("");
+  const [byteString , setByteString] = useState("")
+  const userFace = useRef<HTMLInputElement>(null);
   const addImages = props.addImages;
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-    console.log(image);
-    //  alert(`The name you entered was: ${userFace.current.files[0].name}`);
-    const formData = new FormData();
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data"
-      }
-    };
-    if (userFace.current  && userFace?.current?.files?.[0] ) {
-      formData.append("face", userFace.current.files[0]);
-      axios
-        .post("/api/authenticate", formData,config)
-        .then((res) => {
-          // alert("File Upload success");
-        //  const reader = new FileReader();
 
-          // alert(res.data)
-       //   reader.onloadend = () => {
-       //     addImages(reader.result as string);
-        //  };
-          //  reader.readAsDataURL();
-        //  reader.readAsDataURL(res.data);
-          alert(typeof res.data)
-          console.log("here");
-        })
-        .catch((err) => alert(err));
-    }
-  };
+  async function postData(url:string , data:string ) {
+    // Default options are marked with *
+    const response = await fetch(url, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify({"Photo":data}) // body data type must match "Content-Type" header
+    });
+    return response.json; // parses JSON response into native JavaScript objects
+  }
+  
+  
+
+  const handleSubmit =  async (event: any) => {
+    event.preventDefault();
+   // alert("submi")
+    let options = { args: ["9_1.jpg"] };
+    fetch("/api/process").then((response) => response.json())
+      .then((data) => setByteString(data.result));
+    
+    console.log(byteString)
+    postData("http://localhost:5000/photo",byteString)
+      .then()
+    
+  
+
+  }
 
   return (
     <>
@@ -62,6 +64,7 @@ const SignIn = (props: any) => {
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               if (event?.target?.files?.[0]) {
                 const file = event.target.files[0];
+                setFileName(file.name);
                 const reader = new FileReader();
                 reader.onloadend = () => {
                   setImage(reader.result as string);
@@ -76,5 +79,6 @@ const SignIn = (props: any) => {
     </>
   );
 };
+
 
 export default SignIn;
