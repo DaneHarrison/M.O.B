@@ -58,5 +58,5 @@ spec:
         backend:
           service:
             name: front-service
-            port: 
-              number: 5000
+            port:
+              number: 80
