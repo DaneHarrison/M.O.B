@@ -28,25 +28,13 @@ REM run the logs docker container
 "docker" "run" "-d" "--name" "logs" "-p" "5435:5432" "logs"
 echo logs db running
 
-REM build worker docker
+REM launch worker
 cd %rootDir%
-"docker" "build" "-t" "worker" "-f" "src/deployment/docker/worker/Dockerfile" "."
-echo Successfully built docker worker
+start cmd /k  "cd .\src\logic && python front.py"
 
-REM run docker worker
-cd %rootDir%\src\deployment\docker\worker
-"docker" "run" "-d" "--name" "worker" "-p" "4000:4000" "worker"
-echo Worker docker image running
-
-REM build front docker
+REM launch front
 cd %rootDir%
-"docker" "build" "-t" "front" "-f" "src/deployment/docker/front/Dockerfile" "."
-echo Successfully built docker front
-
-REM run docker front
-cd %rootDir%\src\deployment\docker\front
-"docker" "run" "-d" "--name" "front" "-p" "5000:5000" "front"
-echo front docker running
+start cmd /k  "cd .\src\logic\worker && python worker.py"
 
 REM Seed the db
 cd %rootDir%\src\persistance\seed
