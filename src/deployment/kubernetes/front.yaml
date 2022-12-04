@@ -1,50 +1,46 @@
+---
 apiVersion: v1
-kind: ConfigMap
+kind: Service
 metadata:
-  name: mob-config
-data:
-  key: value
+  name: front-service
+  labels:
+    app: front-service
+spec:
+  selector:
+    app: front
+  ports:
+  - name: front  
+    port: 5000
+    targetPort: 5000
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mob-deployment
+  name: front-deployment
   labels:
-    app: mob
+    app: front-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: mob
+      app: front
   template:
     metadata:
       labels:
-        app: mob
+        app: front
     spec:
       containers:
-      - name: mob
-        image: nikolaik/python-nodejs:python3.8-nodejs15
-        imagePullPolicy: IfNotPresent
+      - name: front
+        image: front
+        imagePullPolicy: Never
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 8080
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mob-service
-  labels:
-    app: mob
-spec:
-  selector:
-    app: mob
-  ports:
-  - Protocol: TCP  
-    port: 5432
-    targetPort: 5432
+        - containerPort: 5000
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -54,13 +50,13 @@ metadata:
     name: mob-ingress
 spec:
   rules:
-  - host: <Host>
+  - host: 'localhost'
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: mob-service
+            name: front-service
             port: 
-              number: <Port>
+              number: 5000
