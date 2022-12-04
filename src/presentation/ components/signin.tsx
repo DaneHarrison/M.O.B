@@ -5,27 +5,29 @@
 */
 import { ChangeEvent, useRef, useState } from "react";
 
-
 /*
   SignIn 
   displays the signin form jsx into html
 */
 const SignIn = (props: any) => {
-  const [image, setImage] = useState("");           //stores preview image
-  const [fileName, setFileName] = useState("");     //stores filename of image
-  const [byteString, setByteString] = useState("");   // stores converted byte string
+  const [image, setImage] = useState(""); //stores preview image
+  const [fileName, setFileName] = useState(""); //stores filename of image
+  const [byteString, setByteString] = useState(""); // stores converted byte string
   const userFace = useRef<HTMLInputElement>(null);
   const addImages = props.addImages;
 
   async function postData(url: string, data: string) {
-    const response = await fetch(url, {
-      method: "POST", 
+    fetch(url, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ Photo: data }), 
-    });
-    return response;
+      body: JSON.stringify({ Photo: data }),
+    }).then((response)=>{
+      response.json()
+    }).then(
+      data => alert(data)
+    )
   }
 
   // handleSubmit
@@ -36,8 +38,7 @@ const SignIn = (props: any) => {
     fetch(`/api/process/${fileName}`)
       .then((response) => response.json())
       .then((data) => setByteString(data.result));
-    postData("http://localhost:5000/photo", byteString)
-      .then((data) => console.log(data));
+   
   };
 
   return (
@@ -75,7 +76,7 @@ const SignIn = (props: any) => {
               }
             }}
           />
-          <input className="btn-primary btn " type="submit" />
+          {image && <input className="btn-primary btn " type="submit" />}
         </form>
       </div>
     </>

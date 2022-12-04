@@ -4,8 +4,36 @@
    and converts the image bytes into a string the db server can understand
 */
 
+import axios from "axios";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { PythonShell } from "python-shell";
+
+
+async function getFromServer(config:any) {
+  let data = new Promise((resolve) => {
+      axios(config).then(function(response){
+          return resolve(response.data);
+      })
+  });
+
+  return data;
+}
+
+
+async function postData(url: string, data: string) {
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ Photo: data }),
+  }).then((response)=>{
+    response.json()
+  }).then(
+    data => console.log(data)
+  )
+}
+
 
 /*
    get_data
@@ -22,6 +50,8 @@ async function get_data(options: any) {
       }
     });
   });
+
+  
 
   return result;
 }
@@ -40,11 +70,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await get_data(options).then((name) => {
     result = name 
   });
-  
 
- 
+  let optionsReq = {
+    method: 'post',
+    url: 'http://127.0.0.1:5000/photo',
+    data: {
+        Photo:result
+    }
+  }
 
-
+  console.log(getFromServer(optionsReq))
 
   res.status(200).json({result})
 }
