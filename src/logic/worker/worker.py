@@ -46,9 +46,9 @@ class ProcessImg(Resource):
             photo_as_string = photo_in_base64.decode('utf-8')
 
             # Prepare matched image to be sent over JSON if this is a valid authentication request
-            json_results = json.dumps({"Name": results["Name"],"Photo": photo_as_string}, indent=2)
+            json_results = json.dumps({"Name": results["Name"], "Photo": photo_as_string}, indent=2)
         else:         # If the sent image has been previously seen we dont want to grant access to the user
-          json_results = json.dumps({"Name": None,"Photo": None})
+          json_results = json.dumps({"Name": None, "Photo": None})
 
         return json_results  # responds to the front facing servers request
     
