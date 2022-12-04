@@ -1,45 +1,44 @@
-import axios from "axios";
+/*
+  signin.tsx
+  This component grabs the user photo and  converts it to a string
+  and sends it to the database server
+*/
 import { ChangeEvent, useRef, useState } from "react";
 
+
+/*
+  SignIn 
+  displays the signin form jsx into html
+*/
 const SignIn = (props: any) => {
-  const [image, setImage] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [byteString , setByteString] = useState("")
+  const [image, setImage] = useState("");           //stores preview image
+  const [fileName, setFileName] = useState("");     //stores filename of image
+  const [byteString, setByteString] = useState("");   // stores converted byte string
   const userFace = useRef<HTMLInputElement>(null);
   const addImages = props.addImages;
 
-  async function postData(url:string , data:string ) {
-    // Default options are marked with *
+  async function postData(url: string, data: string) {
     const response = await fetch(url, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      method: "POST", 
       headers: {
-        'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({"Photo":data}) // body data type must match "Content-Type" header
+      body: JSON.stringify({ Photo: data }), 
     });
-    return response; // parses JSON response into native JavaScript objects
+    return response;
   }
-  
-  
 
-  const handleSubmit =  async (event: any) => {
+  // handleSubmit
+  // converts and submits image to db server
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
-   // alert("submi")
     let options = { args: ["9_1.jpg"] };
-
-    fetch(`/api/process/${fileName}`).then((response) => response.json())
+    fetch(`/api/process/${fileName}`)
+      .then((response) => response.json())
       .then((data) => setByteString(data.result));
-    
-    console.log(byteString)
-    postData("http://localhost:5000/photo",byteString).then((response) => response.json())
-    .then((data) => console.log(data.hello));
-   
-     
-    
-  
-
-  }
+    postData("http://localhost:5000/photo", byteString)
+      .then((data) => console.log(data));
+  };
 
   return (
     <>
@@ -82,6 +81,5 @@ const SignIn = (props: any) => {
     </>
   );
 };
-
 
 export default SignIn;

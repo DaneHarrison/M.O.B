@@ -1,9 +1,10 @@
+import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import Matches from "../../../ components/matches";
 import SignIn from "../../../ components/signin";
 
-const LoginPage = () => {
+const LoginPage: NextPage = () => {
     const [resultImages, setResultImages] = useState("")
 
     const addImages = (images:any)=>{
