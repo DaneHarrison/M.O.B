@@ -69,18 +69,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let options = { args: [filename] };
   await get_data(options).then((name) => {
     result = name 
-  });
+    console.log(result)
 
    
   let optionsReq = {
     method: 'post',
     url: 'http://127.0.0.1:5000/',
     data: {
-        Photo:result
+      Photo: result
     }
   }
 
   console.log(getFromServer(optionsReq))
 
   res.status(200).json({result})
+});
 }

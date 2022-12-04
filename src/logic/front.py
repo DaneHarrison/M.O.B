@@ -14,11 +14,14 @@ URL = 'http://localhost:4000/'  # URL where the worker(s) can be reached
 
 app = Flask(__name__)   # Flask server instance
 api = Api(app)          # Controls the Flask server API 
-  
+    
 class ProcessImg(Resource):
     def post(self,):
+        recvdPhoto = request.get_json()
+        recvdPhoto = recvdPhoto['Photo']
+
         # Forward the request to a worker, once a response is recieved forward that back to the user
-        res = requests.post(URL, json = request.json)
+        res = requests.post(URL, json = json.dumps({'Photo': recvdPhoto}))
         res = res.json()
 
         return res # Forward the response back to the user
