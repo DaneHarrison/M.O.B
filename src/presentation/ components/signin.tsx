@@ -18,7 +18,7 @@ const SignIn = (props: any) => {
       },
       body: JSON.stringify({"Photo":data}) // body data type must match "Content-Type" header
     });
-    return response.json; // parses JSON response into native JavaScript objects
+    return response; // parses JSON response into native JavaScript objects
   }
   
   
@@ -27,12 +27,15 @@ const SignIn = (props: any) => {
     event.preventDefault();
    // alert("submi")
     let options = { args: ["9_1.jpg"] };
-    fetch("/api/process").then((response) => response.json())
+
+    fetch(`/api/process/${fileName}`).then((response) => response.json())
       .then((data) => setByteString(data.result));
     
     console.log(byteString)
-    postData("http://localhost:5000/photo",byteString)
-      .then()
+    postData("http://localhost:5000/photo",byteString).then((response) => response.json())
+    .then((data) => console.log(data.hello));
+   
+     
     
   
 

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { PythonShell } from "python-shell";
 
@@ -32,27 +31,20 @@ async function postData(url = '', data = {}) {
 // handler
 // processes file string on /api/process end point
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+
+  const {filename} = req.query
+  //console.log(`file$ ${filename}`)
   let imgString: string = "";
   let result :any ;
-  let options = { args: ["9_1.jpg"] };
+  let options = { args: [filename] };
   // runPython({args:["9_1.jpg"]})
   await get_data(options).then((name) => {
     result = name
     //console.log(name)
   });
-  // res.status(200).json({ name: name})
-  //runPython({args:["9_1.jpg"]})
-//  console.log(result)
-  const config = { // might need to explicity set a header as sending JSON
-    method: 'post',
-    url: 'http://localhost:5000/',
-    data: result
-  }
-  console.log(typeof result)
- // postData('http://localhost:5000/photo', { Photo: result })
- // .then((data) => {
-   // console.log(data); // JSON data parsed by `data.json()` call
-  //});
+  
+ // console.log(result)
+ 
 
 
 
