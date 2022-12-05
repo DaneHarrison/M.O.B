@@ -15,6 +15,7 @@ const SignIn = (props: any) => {
   const [byteString, setByteString] = useState(""); // stores converted byte string
   const userFace = useRef<HTMLInputElement>(null);
   const addImages = props.addImages;
+  const changeName = props.changeName;
 
   async function postData(url: string, data: string) {
     fetch(url, {
@@ -37,7 +38,12 @@ const SignIn = (props: any) => {
     let options = { args: ["9_1.jpg"] };
     fetch(`/api/process/${fileName}`)
       .then((response) => response.json())
-      .then((data) => setByteString(data.result));
+      .then((data) => {
+       // alert(data.name)
+        changeName(data.name)
+        addImages(data.photo)
+       // alert(data.photo)
+      })
    
   };
 

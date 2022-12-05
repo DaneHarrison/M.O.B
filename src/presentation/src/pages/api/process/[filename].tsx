@@ -69,6 +69,8 @@ async function get_data(options: any) {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {filename} = req.query
   let result :any ;
+  let photo = ""
+  let name = ""
   let options = { args: [filename] };
   await get_data(options).then((name) => {
     result = name 
@@ -87,14 +89,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     (response:any)=> {
       let photo:any = JSON.parse(response)
      // console.log(photo.Photo)
-      let options = { args: [photo.Photo] };
-
-      photo = getDataDecode(options).then((data)=>{
-        console.log(data)
-      })
+      name = photo.Name
+     // let options = { args: [photo.Photo] };
+      res.status(200).json({name:name , photo: photo.Photo})
+      
     }
   )
-
-  res.status(200).json({result})
 });
 }
