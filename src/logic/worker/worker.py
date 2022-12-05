@@ -10,7 +10,7 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from request import Request
-import threading, json, base64, numpy
+import json, base64, numpy
 
 HOST = 'localhost'                              # The workers address
 PORT = 4000                                     # The workers port

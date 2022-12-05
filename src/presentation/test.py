@@ -15,7 +15,7 @@ def read_image(file_name):
     return photo_as_string
 
 if __name__ == '__main__':
-    files =os.listdir(".") 
+  #  files =os.listdir(".") 
    # print(files)
     file_name = "testingData/"+sys.argv[1]
     #print(file_name)

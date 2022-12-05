@@ -7,6 +7,7 @@
 import axios from "axios";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { PythonShell } from "python-shell";
+import { unescape } from "querystring";
 
 
 async function getFromServer(config:any) {
@@ -20,18 +21,23 @@ async function getFromServer(config:any) {
 }
 
 
-async function postData(url: string, data: string) {
-  fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ Photo: data }),
-  }).then((response)=>{
-    response.json()
-  }).then(
-    data => console.log(data)
-  )
+/*
+   getDataDecode
+   runs a python script to convert image data to a string
+   options contains arg parameter of image path
+   returns image string
+*/
+async function getDataDecode(options: any) {
+  let result = new Promise((resolve, reject) => {
+    PythonShell.run("decode.py", options, function (err, result) {
+      if (err) return reject(err);
+      if (result) {
+        return resolve(result[0]);
+      }
+    });
+  });
+
+  return result
 }
 
 
@@ -50,9 +56,6 @@ async function get_data(options: any) {
       }
     });
   });
-
-  
-
   return result;
 }
 
@@ -69,8 +72,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let options = { args: [filename] };
   await get_data(options).then((name) => {
     result = name 
-    console.log(result)
-
+    //console.log(result)
+  
    
   let optionsReq = {
     method: 'post',
@@ -80,7 +83,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
-  console.log(getFromServer(optionsReq))
+  getFromServer(optionsReq).then(
+    (response:any)=> {
+      let photo:any = JSON.parse(response)
+     // console.log(photo.Photo)
+      let options = { args: [photo.Photo] };
+
+      photo = getDataDecode(options).then((data)=>{
+        console.log(data)
+      })
+    }
+  )
 
   res.status(200).json({result})
 });
