@@ -13,7 +13,7 @@ const SignIn = (props: any) => {
   const [image, setImage] = useState(""); //stores preview image
   const [fileName, setFileName] = useState(""); //stores filename of image
   const userFace = useRef<HTMLInputElement>(null);
-  const addImages = props.addImages;
+  const changeImage = props.changeImage;
   const changeName = props.changeName;
 
   
@@ -29,7 +29,7 @@ const SignIn = (props: any) => {
       .then((response) => response.json())
       .then((data) => {
         changeName(data.name);
-        addImages(data.photo);
+        changeImage(data.photo);
       });
   };
 
