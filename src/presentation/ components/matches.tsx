@@ -1,3 +1,7 @@
+/*
+  matches.tsx
+  conditionally renders matching name from the front api
+*/
 const Matches = (props:any) => {
     const images = props.resultImages
     const name = props.name;

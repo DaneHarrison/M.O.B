@@ -12,39 +12,25 @@ import { ChangeEvent, useRef, useState } from "react";
 const SignIn = (props: any) => {
   const [image, setImage] = useState(""); //stores preview image
   const [fileName, setFileName] = useState(""); //stores filename of image
-  const [byteString, setByteString] = useState(""); // stores converted byte string
   const userFace = useRef<HTMLInputElement>(null);
   const addImages = props.addImages;
   const changeName = props.changeName;
 
-  async function postData(url: string, data: string) {
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ Photo: data }),
-    }).then((response)=>{
-      response.json()
-    }).then(
-      data => alert(data)
-    )
-  }
+  
 
   // handleSubmit
-  // converts and submits image to db server
+  // submits name of the image test file and opens it on backend route 
+  // localhosthost:3000/api/process/<name of file>
+  // then it sets the state of the matching photo and name and using prop drilling 
+  // it renders it on the matching component
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    let options = { args: ["9_1.jpg"] };
     fetch(`/api/process/${fileName}`)
       .then((response) => response.json())
       .then((data) => {
-       // alert(data.name)
-        changeName(data.name)
-        addImages(data.photo)
-       // alert(data.photo)
-      })
-   
+        changeName(data.name);
+        addImages(data.photo);
+      });
   };
 
   return (
