@@ -1,3 +1,6 @@
+# encode.py
+# encodes image to a base64 string
+
 import os
 import sys
 import cv2
@@ -17,6 +20,6 @@ def read_image(file_name):
 if __name__ == '__main__':
     file_name = "testingData/"+sys.argv[1]
     output = read_image(file_name)
-    print(output)
+    print(output)    # outputs string for javascript backend to read
 
 
