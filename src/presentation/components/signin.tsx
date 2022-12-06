@@ -5,39 +5,32 @@
 */
 import { ChangeEvent, useRef, useState } from "react";
 
-
 /*
   SignIn 
   displays the signin form jsx into html
 */
 const SignIn = (props: any) => {
-  const [image, setImage] = useState("");           //stores preview image
-  const [fileName, setFileName] = useState("");     //stores filename of image
-  const [byteString, setByteString] = useState("");   // stores converted byte string
+  const [image, setImage] = useState(""); //stores preview image
+  const [fileName, setFileName] = useState(""); //stores filename of image
   const userFace = useRef<HTMLInputElement>(null);
-  const addImages = props.addImages;
+  const changeImage = props.changeImage;
+  const changeName = props.changeName;
 
-  async function postData(url: string, data: string) {
-    const response = await fetch(url, {
-      method: "POST", 
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ Photo: data }), 
-    });
-    return response;
-  }
+  
 
   // handleSubmit
-  // converts and submits image to db server
+  // submits name of the image test file and opens it on backend route 
+  // localhosthost:3000/api/process/<name of file>
+  // then it sets the state of the matching photo and name and using prop drilling 
+  // it renders it on the matching component
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    let options = { args: ["9_1.jpg"] };
     fetch(`/api/process/${fileName}`)
       .then((response) => response.json())
-      .then((data) => setByteString(data.result));
-    postData("http://localhost:5000/", byteString)
-      .then((data) => console.log(data));
+      .then((data) => {
+        changeName(data.name);
+        changeImage(data.photo);
+      });
   };
 
   return (
@@ -75,7 +68,7 @@ const SignIn = (props: any) => {
               }
             }}
           />
-          <input className="btn-primary btn " type="submit" />
+          {image && <input className="btn-primary btn " type="submit" />}
         </form>
       </div>
     </>
