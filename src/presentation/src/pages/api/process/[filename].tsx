@@ -7,19 +7,22 @@
 import axios from "axios";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { PythonShell } from "python-shell";
-import { unescape } from "querystring";
 
-
-async function getFromServer(config:any) {
+/*
+  getFromServer
+  config param accepts the details of the http requext
+  send post request to a server and returns the data in the http body of the response
+  returns json string
+*/
+async function getFromServer(config: any) {
   let data = new Promise((resolve) => {
-      axios(config).then(function(response){
-          return resolve(response.data);
-      })
+    axios(config).then(function (response) {
+      return resolve(response.data);
+    });
   });
 
   return data;
 }
-
 
 /*
    getDataDecode
@@ -37,17 +40,16 @@ async function getDataDecode(options: any) {
     });
   });
 
-  return result
+  return result;
 }
 
-
 /*
-   get_data
-   runs a python script to convert image data to a string
+   getPhotoString
+   runs a python script to convert image data to a base 64 string
    options contains arg parameter of image path
    returns image string
 */
-async function get_data(options: any) {
+async function getPhotoString(options: any) {
   let result = new Promise((resolve, reject) => {
     PythonShell.run("test.py", options, function (err, result) {
       if (err) return reject(err);
@@ -59,41 +61,40 @@ async function get_data(options: any) {
   return result;
 }
 
-
 /*
    handler
    handles api requests made by clients for image string conversion
    req ,is the user req to server
    res, is the response object to respond to client request
 */
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const {filename} = req.query
-  let result :any ;
-  let photo = ""
-  let name = ""
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { filename } = req.query;
+  let result: any;
   let options = { args: [filename] };
-  await get_data(options).then((name) => {
-    result = name 
-    //console.log(result)
-  
-   
-  let optionsReq = {
-    method: 'post',
-    url: 'http://127.0.0.1:5000/',
-    data: {
-      Photo: result
-    }
-  }
 
-  getFromServer(optionsReq).then(
-    (response:any)=> {
-      let photo:any = JSON.parse(response)
-     // console.log(photo.Photo)
-      name = photo.Name
-     // let options = { args: [photo.Photo] };
-      res.status(200).json({name:name , photo: photo.Photo})
-      
-    }
-  )
-});
+  // gets base64 string of tests image
+  await getPhotoString(options).then((photoString) => {
+    result = photoString;
+
+    let optionsReq = {
+      method: "post",
+      url: "http://127.0.0.1:5000/",
+      data: {
+        Photo: result,
+      },
+    };
+
+
+    // sends base64 string to front server
+    getFromServer(optionsReq).then((response: any) => {
+      let matchingData: any = JSON.parse(response);
+      let name: string = matchingData.Name; 
+      let photoString:any = matchingData.Photo;
+          
+      res.status(200).json({ name: name, photo: photoString});  // sends response back to clients side 
+    });
+  });
 }
