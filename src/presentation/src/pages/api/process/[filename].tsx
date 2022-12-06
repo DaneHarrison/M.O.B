@@ -51,7 +51,7 @@ async function getDataDecode(options: any) {
 */
 async function getPhotoString(options: any) {
   let result = new Promise((resolve, reject) => {
-    PythonShell.run("test.py", options, function (err, result) {
+    PythonShell.run("encode.py", options, function (err, result) {
       if (err) return reject(err);
       if (result) {
         return resolve(result[0]);
