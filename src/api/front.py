@@ -1,7 +1,7 @@
 # --------------------------------
 # front (server)
 #
-# front is a server responsible for delegating authenticaation requests to workers
+# front is a server responsible for delegating authentication requests to workers
 # once a response is recieved, the response is then sent back to the user
 # --------------------------------
 from flask import Flask, request, jsonify

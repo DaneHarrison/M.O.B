@@ -28,22 +28,27 @@ with open(E_VECTOR_LOCATION, 'r') as e_vector_file:
 with open(MEAN_VECTOR_LOCATION, 'r') as mean_vector_file:
   mean_vector = json.load(mean_vector_file)
 
+logic = hi
 # Adds the image processing route
 class ProcessImg(Resource):
     def post(self,):
-        req = Request() # Processes images sent to the worker
-        
+        """
         # Read the raw image bytes from JSON and then start processing the authentication request
+        """
         photo = json.loads(request.json)
+        results = logic.handleRequest(photo)
+        
+        
         photo = photo["Photo"].encode('utf-8')
         photo = base64.decodebytes(photo)
         photo = numpy.fromstring(photo, numpy.uint8)
         req.process(photo, e_vectors, mean_vector)
         results = req.get_results()
 
-        if(results):  # If this is a new picture for the system
             photo_in_base64 = base64.b64encode(results["Photo"])
             photo_as_string = photo_in_base64.decode('utf-8')
+
+        if(results):  # If this is a new picture for the system
 
             # Prepare matched image to be sent over JSON if this is a valid authentication request
             json_results = json.dumps({"Name": results["Name"], "Photo": photo_as_string}, indent=2)
