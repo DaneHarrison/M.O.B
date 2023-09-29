@@ -237,8 +237,8 @@ class Trainer:
         print(f'Correct = {correct} Wrong = {wrong}')
 
 if __name__ == '__main__':
-    path = '../../../res/trainingData/'
-    testing_path = '../../../res/testingData/'
+    path = '../../../data/trainingData/'
+    testing_path = '../../../data/testingData/'
     model = Trainer(height = 80, width = 70, num_images=320, img_path=path)
     model.run_training()
     #model.test_model(debug=True, stats=True, testpath=testing_path)
