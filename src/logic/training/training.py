@@ -3,31 +3,42 @@ import os
 import cv2
 import json
 import re
-#---------------------------------------------------
-# Trainer (class)
-#
-#Trainer uses a set of training images and used the eigen faces algorithm to build a model.
-#This process involves:
-#   - Reading each input images as a grayscale flattened vector
-#   - Creating a matrix, where each column in the matrix is a flattened image
-#   - Calcualting the mean column of the matrix
-#   - Subtracting the mean column from each column in the matrix
-#   - Calculating the Covarience matrix of the above matrix
-#   - Calcualting eigen values and eigen vectors of the covarience matrix
-#   - Ordering the eigen vectors according to their corresponding eigen values
-#   - Determining the top N eigen vectors that make up 95% of the difference
-#   - Calcualting the Weights of the eigen vectors
-#   - Saving the model informaiton in json format 
-#---------------------------------------------------
+
 class Trainer:
+    '''
+    Trainer (Class)
     
-    #this initializes all the variables
+    The trainer utilizes a curated set of training images and employs the eigenfaces algorithm to construct a model.
+    This process involves the following steps:
+
+    - Parsing each input image as a grayscale flattened vector
+    - Constructing a matrix where each column represents a flattened image
+    - Computing the mean column of the matrix
+    - Normalizing each column by subtracting the mean column
+    - Calculating the Covariance matrix of the normalized matrix
+    - Determining eigenvalues and eigenvectors of the covariance matrix
+    - Sorting the eigenvectors based on their corresponding eigenvalues
+    - Selecting the top N eigenvectors that collectively capture 95% of the variance
+    - Deriving the weights associated with these selected eigenvectors
+    - Storing the model information in JSON format
+    '''
+    
     def __init__(self, height, width, num_images, img_path):
 
-        self.height = height  #height of the training image
-        self.width = width    #width of the training image
-        self.num_images = num_images #number of training images
-        self.img_path = img_path #the path of the training images
+        '''
+        Initializes the Trainer object.
+
+        Parameters: 
+            height (int): The height of each image in pixels
+            width (int): The width of each image in pixels
+            num_images (int): The total number of training images
+            img_path (string): Path to the training images 
+        '''
+
+        self.height = height
+        self.width = width
+        self.num_images = num_images
+        self.img_path = img_path
 
         #this matrix will contains all the training images after the
         #images have been flattened
@@ -55,24 +66,27 @@ class Trainer:
         #this vector holds the mean vector of L
         self.mean_vector = []
 
-    #---------------------------------
-    #sorted_alphanumeric(self, data)
-    #
-    #This methods receives a list containing strings and sorts them in sorted alphanumeric order
-    #---------------------------------
     def sorted_alphanumeric(self, data):
+
+        '''
+        Sorts a list of strigns in alphanumeric order
+
+        Parameters:
+            data (List[]): List of strings
+        Returns:
+            List [] : sorted list of strings
+        '''
+
         convert = lambda text: int(text) if text.isdigit() else text.lower()
         alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
         return sorted(data, key=alphanum_key)
 
-    #--------------------------------
-    #read_images(self,)
-    #
-    #This methods reads all of the training images in grayscale using the open-cv library
-    #Then it flattens all of the images into a vectors and adds them as columns in the
-    #matrix L
-    #--------------------------------
     def read_images(self,):
+        '''
+        Reads all of the training images in grayscale using the open-cv library,
+        then flattens all of the images into vectors and adds them as columns in the
+        matrix L
+        '''
         index = 0
         for name in self.training_names:
             try:
@@ -82,39 +96,30 @@ class Trainer:
             self.L[:,index] = np.array(image, dtype='float64').flatten()[:]
             index += 1
 
-    #--------------------------------
-    #subtract_mean_face(self,)
-    #
-    #This methods calculates the mean column from the matrix L
-    #Then it subtracts the mean column from every column in L
-    #--------------------------------
     def subtract_mean_face(self,):
+        '''
+        Calculates the mean column from the matrix L, and subtracts it from every column in L
+        '''
         
         self.mean_vector = np.sum(self.L, axis=1) / self.num_images
         for i in range(self.num_images):
             self.L[:,i] -= self.mean_vector[:]
 
-    #--------------------------------
-    #Covariance(self,)
-    #
-    #This methos calculates the covariance matrix of L
-    #Then it calcualtes the eigen values and eigen vectors of L
-    #--------------------------------
     def Covariance(self,):
+        '''
+        Calculates the covariance matrix of L and its eigen values and eigen vectors
+        '''
         self.LTL = np.matrix(self.L.transpose()) * np.matrix(self.L)  
         self.LTL /= self.num_images
 
         self.eValues, self.eVectors = np.linalg.eig(self.LTL)
 
-    #--------------------------------
-    #find_k(self,)
-    #
-    #This method orders the eigenvectors according to their eigen values
-    #in descending order. Then it calcualtes the number of eigen values
-    #it takes to make up 95% of the sum of all eigen values. Then it 
-    #removes any eigen vectors that i not part of the 95%
-    #--------------------------------
     def find_k(self):
+        '''
+        Orders the eigen vectors of L according to their eigen values in descending order. 
+        Calcualtes the number of top eigen values needed to make of 95% of the sum of all eigen values.
+        Removes all the eigen vectors that do not correspond to the top 95%
+        '''
         sort_indices = self.eValues.argsort()[::-1]
 
         self.eValues = self.eValues[sort_indices]
@@ -132,14 +137,10 @@ class Trainer:
             else:
                 self.K += 1
 
-    #--------------------------------
-    #find_weights(self,)
-    #
-    #This method uses numpy to normalize the eigen vectors
-    #and calculates the weight of each eigen vector
-    #--------------------------------
     def find_weights(self,):
-
+        '''
+        Uses numpy to normalize the eigen vectors and calculates the weight of each eigen vector
+        '''
         #first reduce the number of eigen vectors and values to K
         self.eValues = self.eValues[0:self.K]
         self.eVectors = self.eVectors[:,0:self.K]
@@ -153,31 +154,25 @@ class Trainer:
 
         self.eVectors = self.eVectors.transpose()
 
-    #--------------------------------
-    #run_training(self,)
-    #
-    #This methods runs all the methods necessary to 
-    #train the model
-    #--------------------------------
     def run_training(self,):
+        '''
+        Runs all of the methods necessary to train the model
+        '''
         self.read_images()
         self.subtract_mean_face()
         self.Covariance()
         self.find_k()
         self.find_weights()
 
-    #--------------------------------
-    #test_model(self, degub, stats, testpath)
-    #
-    #This method received the following parameters:
-    #   - Degub: a boolean that determine if debug information if printed to console
-    #   - Stats: a boolean that determines if stats of each test are printed to console
-    #   - testpath: a string that contains the path of the test images
-    #
-    #This methods takes all of the test images privided and runs them
-    #against the model to determine its accuracy.
-    #--------------------------------
     def test_model(self, debug, stats, testpath):
+        '''
+        Uses the test images provided and runs them against the model to determine its accuracy.
+
+        Parameters:
+            debug (boolean): Determines if the debug information is printed to the console
+            stats (boolean): Determines if the stats are printed to the console
+            testpath (string): Path to the test images
+        '''
         testing_names = os.listdir(testpath)
         wrong = 0
         correct = 0
