@@ -6,7 +6,7 @@
 # --------------------------------
 from flask import Flask, request, jsonify, render_template, Response
 from flask_restful import Resource, Api
-import json, requests, os
+import json, requests, os, io
 from werkzeug.utils import secure_filename
 
 HOST = 'localhost'              # The front servers address
@@ -41,10 +41,25 @@ class Index(Resource):
             return jsonify({'error':'No image selected, kinda weird'})
         
         if file:
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            url = 'http://localhost:4000/'
+            file_contents = file.read()
+            file_like_object = io.BytesIO(file_contents)
+
+            files = [
+                ('file', ('image.jpg', file_like_object, 'image/jpg'))
+            ]
+
+            response = requests.post(url, files=files)
+            print(response.text)
+        # if file:
+        #     url = 'http://localhost:4000/'
+        #     files = [
+        #         ('file', (file, 'image/jpg'))
+        #     ]
+
+        #     response = requests.request("POST", url, files=files)
+        #     print(response.text)
         
-        return Response("Success", mimetype='text/html')
     
 
 #api.add_resource(ProcessImg, '/')
