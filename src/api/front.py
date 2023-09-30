@@ -6,7 +6,7 @@
 # --------------------------------
 from flask import Flask, request, jsonify, render_template, Response
 from flask_restful import Resource, Api
-import threading, json, requests, os, urllib.request
+import json, requests, os
 from werkzeug.utils import secure_filename
 
 HOST = 'localhost'              # The front servers address
