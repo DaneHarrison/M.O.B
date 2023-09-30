@@ -13,7 +13,7 @@ HOST = 'localhost'              # The front servers address
 PORT = 5000                     # The front servers port
 URL = 'http://localhost:4000/'  # URL where the worker(s) can be reached   
 
-app = Flask(__name__, template_folder='../presentation/src/templates/')   # Flask server instance
+app = Flask(__name__, template_folder='../presentation/build/', static_folder='../presentation/build/static/')   # Flask server instance
 app.config['UPLOAD_FOLDER'] = './'
 api = Api(app)          # Controls the Flask server API 
     
