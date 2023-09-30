@@ -80,7 +80,7 @@ class seedDB:
             my_photo = psycopg2.Binary(my_photo.read())
 
             #build the insert query
-            my_msg = f"BEGIN; insert into public.\"UserFaces\" values ({id_start}, '{self.names[self.name_idx]}', ARRAY{my_weights}, {my_photo}); COMMIT;"
+            my_msg = f"BEGIN; insert into public.user_faces values ({id_start}, '{self.names[self.name_idx]}', ARRAY{my_weights}, {my_photo}); COMMIT;"
             id_start += 1
             
             #execute the insert query

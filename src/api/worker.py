@@ -14,21 +14,11 @@ import json, base64, numpy
 
 HOST = 'localhost'                              # The workers address
 PORT = 4000                                     # The workers port
-E_VECTOR_LOCATION = './data/eVectors.json'      # The location of the eVectors file
-MEAN_VECTOR_LOCATION = './data/meanVector.json' # The location of the meanVector file
+
 
 app = Flask(__name__)  # Flask server instance
 api = Api(app)         # Controls the Flask server API
-e_vectors = None       # Holds the eVectors (size 5600x136) used to determine which face is closest to the input image
-mean_vector = None     # Holds the mean vector (size 5600x1) used to determines which face is closest to the input image
 
-# Loads then closes the eVectors and mean vector respectively
-with open(E_VECTOR_LOCATION, 'r') as e_vector_file:
-  e_vectors = json.load(e_vector_file)
-with open(MEAN_VECTOR_LOCATION, 'r') as mean_vector_file:
-  mean_vector = json.load(mean_vector_file)
-
-logic = hi
 # Adds the image processing route
 class ProcessImg(Resource):
     def post(self,):
