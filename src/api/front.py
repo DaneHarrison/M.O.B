@@ -4,7 +4,7 @@
 # front is a server responsible for delegating authentication requests to workers
 # once a response is recieved, the response is then sent back to the user
 # --------------------------------
-from flask import Flask, request, jsonify, render_template, Response
+from flask import Flask, request, jsonify, render_template, Response, abort
 from flask_restful import Resource, Api
 import json, requests, os, io
 from werkzeug.utils import secure_filename
@@ -33,33 +33,17 @@ class Index(Resource):
         return Response(render_template('index.html'), mimetype='text/html')
     
     def post(self,):
-        if 'file' not in request.files:
-            return jsonify({'error': 'No file, kinda cringe'})
-        
-        file = request.files['file']
-        if file.filename == "":
-            return jsonify({'error':'No image selected, kinda weird'})
-        
-        if file:
-            url = 'http://localhost:4000/'
-            file_contents = file.read()
-            file_like_object = io.BytesIO(file_contents)
-
+        if 'img' not in request.files:
+            abort(400, description='img not found')
+        else:
+            img = request.files['img']
             files = [
-                ('file', ('image.jpg', file_like_object, 'image/jpg'))
+                ('file', ('image.jpg', img.read(), 'image/jpg'))
             ]
 
-            response = requests.post(url, files=files)
-            print(response.text)
-        # if file:
-        #     url = 'http://localhost:4000/'
-        #     files = [
-        #         ('file', (file, 'image/jpg'))
-        #     ]
+            response = requests.post(URL, files=files)
 
-        #     response = requests.request("POST", url, files=files)
-        #     print(response.text)
-        
+        return response
     
 
 #api.add_resource(ProcessImg, '/')

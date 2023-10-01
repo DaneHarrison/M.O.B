@@ -1,4 +1,5 @@
 import React from 'react';
+import '../style/App.css'
 
 export default class VideoRecorder extends React.Component {
     constructor(props) {
@@ -7,6 +8,7 @@ export default class VideoRecorder extends React.Component {
         this.state = {
             player: null,
             canvas: null,
+            recording: true,
             constraints: {
                 video: true,
             }
@@ -30,6 +32,7 @@ export default class VideoRecorder extends React.Component {
         } 
         catch(error) {
             console.error('[ERROR]: ', error);
+            this.props.disable()
         }
     }
 
@@ -47,17 +50,38 @@ export default class VideoRecorder extends React.Component {
             context = this.state.canvas.getContext('2d');
             context.drawImage(this.state.player, 0, 0, this.state.canvas.width, this.state.canvas.height);
             jpegDataUri = this.state.canvas.toDataURL('image/jpeg');
-
-            this.stopRecording();
             this.props.updatePhoto('main', jpegDataUri);
         }
     }
 
+    toggleRecording = () => {
+        if(this.state.recording) {
+            this.capture()
+            this.stopRecording();
+
+            this.state.player.classList.add('hidden')
+            this.state.canvas.classList.remove('hidden')
+        }
+        else {
+            this.startRecording()
+            this.state.player.classList.remove('hidden')
+            this.state.canvas.classList.add('hidden')    
+        }
+
+        this.setState({recording: !this.state.recording})
+    }
+
     render() {
         return (
-            <div>
-                <video id="player" muted autoPlay></video>
-                <canvas id="canvas" width="300" height="300"></canvas>
+            <div class='cameraArea'>
+                <video id="player" class='stream' muted autoPlay></video>
+                <canvas id="canvas" class='stream keepTall shadow hidden'></canvas> 
+
+                <div class='btnArea'>
+                    <button class='captureBtn' onClick={this.props.upload}>Upload</button> 
+                    <button class='captureBtn' onClick={this.toggleRecording}>Capture</button>
+                    <button class='captureBtn' onClick={this.props.fetchClosest}>Submit</button>
+                </div>
             </div>
         );
     }

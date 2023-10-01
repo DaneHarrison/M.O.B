@@ -1,76 +1,88 @@
-import VideoRecorder from "./components/videoRecorder";
-import logo from "./100_10.jpg";
-import React from "react";
-import "./style/App.css";
+import VideoRecorder from './components/videoRecorder'
+import logo from './100_10.jpg';
+import React from 'react'
+import './style/App.css'
+import axios from 'axios';
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.state = {
-      recording: true,
-      main: null,
-      left: null,
-      middle: null,
-      right: null,
-    };
-  }
+        this.state = {
+            recordingPerms: true,
+            main: logo, // default image to show incase recording permissions are not granted
+            left: null,
+            middle: null,
+            right: null
+        }
+    }
 
-  fetchClosest() {
-    //load left, middle and right
-    //which ever is closest change that ones outline to green
-  }
 
-  updatePhoto() {
-    //main
-    //if main set recording to false
-    //const base64Image = jpegDataUri.split(',')[1];
-    //const binaryImageData = atob(base64Image);
-    //left
-    //middle
-    //right
-  }
+    disableRecording = () => {
+        this.setState({ recordingPerms: false })
+    }
 
-  render() {
-    return (
-      <div class="background">
-        <h1 class="title">M.O.B</h1>
-        <h3 class="desc">
-          Authentication using MapReduce and the Eigenface algorithm
-        </h3>
-        <div class="app">
-          <div class="cameraArea">
-            <VideoRecorder />
-            {/* <img src={logo} class='pictureFill shadow'></img> */}
-            <div class="btnArea">
-              <form method="post" action="/" enctype="multipart/form-data">
-                <dl>
-                  <p>
-                    <input
-                      type="file"
-                      name="file"
-                      class="form-control"
-                      autocomplete="off"
-                      required
-                    ></input>
-                  </p>
-                </dl>
-                <p>
-                  <input type="submit" value="Submit"></input>
-                </p>
-              </form>
+    fetchClosest() {
+        let formData = new FormData();
 
-              <button class="captureBtn">Capture</button>
-              <button class="captureBtn">Submit</button>
+        formData.append("image", this.state.main);
+        axios.post('http://localhost:5000/', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then((res) => {
+            //unzip res
+            //updatePhoto
+            //updatePhoto
+        })
+    }
+
+    updatePhoto = (posi, photo) => {
+        switch (posi) {
+            case 'main':
+                this.setState({ main: photo })
+                //
+                //
+                break;
+
+            case 'left':
+                break;
+
+            case 'middle':
+                break;
+
+            case 'right':
+                break;
+        }
+    }
+
+    upload() {
+
+    }
+
+    render() {
+        return (
+            <div class='background'>
+                <h1 class='title'>M.O.B</h1>
+                <h3 class='desc'>Authentication using MapReduce and the Eigenface algorithm</h3>
+                <div class='app'>
+                    {this.state.recordingPerms
+                        ? <VideoRecorder updatePhoto={this.updatePhoto} upload={this.upload} fetchClosest={this.fetchClosest} disable={this.disableRecording} />
+                        : <div class='cameraArea'>
+                            <img src={this.state.main} class='pictureFill shadow'></img>
+
+                            <div class='btnArea'>
+                                <button class='captureBtn'>Upload</button>
+                                <button class='captureBtn' onClick={this.fetchClosest}>Submit</button>
+                            </div>
+                        </div>}
+                    <div class='pictureHolder'>
+                        <img src={logo} class='shadow'></img>
+                        <img src={logo} class='middle shadow'></img>
+                        <img src={logo} class='shadow'></img>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="pictureHolder">
-            <img src={logo} class="shadow"></img>
-            <img src={logo} class="middle shadow"></img>
-            <img src={logo} class="shadow"></img>
-          </div>
-        </div>
-      </div>
-    );
-  }
+        );
+    }
 }
