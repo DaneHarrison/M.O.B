@@ -1,6 +1,7 @@
-from src.persistance.adapter import Adapter
-from src.persistance.queries import Queries
-from src.logic.eigRequest import EigRequest
+from persistance.adapter import Adapter
+from persistance.queries import Queries
+from logic.eigRequest import EigRequest
+from typing import Tuple, Optional
 from dotenv import load_dotenv
 import os
 
@@ -26,17 +27,17 @@ class Logic:
         ]
 
 
-    def runEigenFace(self, img):
+    def runEigenFace(self, img: bytes) -> List[Optional[bytes], Optional[bytes]]:
         req = EigRequest(self.faceQuerier, self.faceConns)
         results = None
 
-        if self.logQuerier.recordIfNewImage(img, self.connToLogs):
+        if img and self.logQuerier.recordIfNewImage(img, self.connToLogs):
             image = req.prepareInput(img)
             image_vector = req.compute_image_vector()
             
             mappings = req.map(self.faceQuerier, self.faceConns)
-            bestMapping = req.chooseLeast()
+            bestMapping = req.chooseBest()
             results = req.reduce(self.faceQuerier, self.faceConns)
-            results = req.formatOutput(mappings, results)
+            results = req.formatOutput(results)
 
-        return results
+        return results, req.getMeanVectorBytes()
