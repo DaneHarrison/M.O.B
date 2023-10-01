@@ -31,20 +31,23 @@ class EigRequest:
     def __init__(self):
         self.e_vectors = json.load(open(Request.MEAN_VECTOR_LOCATION, 'r'))
         self.mean_vector = json.load(open(Request.MEAN_VECTOR_LOCATION, 'r'))
-        self.mean_vector_bytes = self.prepareOutput(np.array(self.mean_vector))
+
+        self.mean_vector_bytes = np.array(self.mean_vector)
+        self.mean_vector_bytes = np.reshape(img, (80, 70))
+        self.mean_vector_bytes = self.prepareOutput(self.mean_vector_bytes)
 
 
     def getMeanVectorBytes(self) -> Optional[bytes]:
         return self.mean_vector_bytes
 
-    def prepareInput(self, img: bytes) -> np.ndarray[np.uint8]:
+    def prepareInput(self, img: bytes) -> np.array[np.uint8]:
         img = np.frombuffer(img, np.uint8)
         img = cv2.imdecode(img, cv2.IMREAD_GRAYSCALE)
         img = cv2.resize(img, (EigRequest.IMG_WIDTH, EigRequest.IMG_HEIGHT))
 
         return img
     
-    def compute_image_vector(self, img: np.ndarray[np.uint8]) -> np.ndarray[np.float64]:
+    def compute_image_vector(self, img: np.array[np.uint8]) -> np.array[np.float64]:
         img_col = np.array(img, dtype='float64').flatten()                      # Flatten the input image into a vector
         mean_vector = np.reshape(self.mean_vector, (EigRequest.NUM_PIXELS, 1))  # Ensures the vector is registered correctly 
         img_col = np.reshape(img_col, (EigRequest.NUM_PIXELS, 1))               # Ensures the image is registered correctly
@@ -73,7 +76,7 @@ class EigRequest:
     def chooseBest(self) -> Optional[MapResult]: 
         return min(mappings, key=lambda x: x['Distance'], default=None)
 
-    def prepareOutput(self, img: np.ndarray[np.float64]) -> Optional[bytes]:
+    def prepareOutput(self, img: np.array[np.float64]) -> Optional[bytes]:
         successful, img = cv2.imencode('.jpg', img)
         results = None
 
