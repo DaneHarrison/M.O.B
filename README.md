@@ -26,10 +26,6 @@
 2. Tehillah Kangamba
 3. Zeeshan Javed
 
-- Need to disable CORS
-- Upload distance? name?
-
-- logs are disabled
 <hr>
 
 ![img](./res/MOB2.0.PNG)
