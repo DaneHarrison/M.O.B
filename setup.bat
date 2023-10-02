@@ -28,15 +28,19 @@ REM run the logs docker container
 "docker" "run" "-d" "--name" "logs" "-p" "5435:5432" "logs"
 echo logs db running
 
-REM launch worker
+REM build react
 cd %rootDir%
-start cmd /k  "cd .\src\api && python front.py"
-
-REM launch front
-cd %rootDir%
-start cmd /k  "cd .\src\api && python worker.py"
+start cmd /k "cd .\src\presentation\src && npm run build"
 
 REM Seed the db
 cd %rootDir%\src\persistance\seed
 "python" "seed.py"
 echo db seeded!
+
+REM launch front
+cd %rootDir%
+start cmd /k  "cd .\src\api && python front.py"
+
+REM launch worker
+cd %rootDir%
+start cmd /k  "cd .\src && python api\worker.py"
