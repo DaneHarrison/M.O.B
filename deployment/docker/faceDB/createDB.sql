@@ -4,8 +4,8 @@ CREATE EXTENSION plpython3u;
 CREATE TABLE user_faces (
     id              SERIAL PRIMARY KEY,
     user_name       TEXT NOT NULL,
-    photo           BYTEA NOT NULL,
-    photo_weight    DOUBLE PRECISION[]
+    photo_weight    DOUBLE PRECISION[],
+    photo           BYTEA NOT NULL
 );
 
 CREATE TYPE db_answer AS (
