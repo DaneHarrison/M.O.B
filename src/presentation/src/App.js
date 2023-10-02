@@ -22,19 +22,18 @@ export default class App extends React.Component {
         this.setState({ recordingPerms: false })
     }
 
-    fetchClosest() {
-        let formData = new FormData();
-
-        formData.append("image", this.state.main);
-        axios.post('http://localhost:5000/', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
+    fetchClosest = () => {
+        axios.post('http://localhost:5000/', { img: this.state.main })
+            .then(response => {
+                console.log(response.data); // Handle the server response
+                //     //unzip res
+                //     //updatePhoto
+                //     //updatePhoto
+            })
+            .catch(error => {
+                console.error(error);
             }
-        }).then((res) => {
-            //unzip res
-            //updatePhoto
-            //updatePhoto
-        })
+        );
     }
 
     updatePhoto = (posi, photo) => {

@@ -6,17 +6,19 @@
 # --------------------------------
 from flask import Flask, request, jsonify, render_template, Response, abort
 from flask_restful import Resource, Api
-import json, requests, os, io
+import json, requests, os, io, base64
 from werkzeug.utils import secure_filename
-
+from flask_cors import CORS
 HOST = 'localhost'              # The front servers address
 PORT = 5000                     # The front servers port
 URL = 'http://localhost:4000/'  # URL where the worker(s) can be reached   
 
 app = Flask(__name__, template_folder='../presentation/build/', static_folder='../presentation/build/static/')   # Flask server instance
+CORS(app)
 app.config['UPLOAD_FOLDER'] = './'
 api = Api(app)          # Controls the Flask server API 
-    
+
+
 class ProcessImg(Resource):
     def post(self,):
         recvdPhoto = request.get_json()
@@ -33,15 +35,19 @@ class Index(Resource):
         return Response(render_template('index.html'), mimetype='text/html')
     
     def post(self,):
-        if 'img' not in request.files:
-            abort(400, description='img not found')
-        else:
-            img = request.files['img']
+        try:
+            imgData = request.json.get('img')       
+            _, encoded_data = imgData.split(',', 1) # Remove meta data
+            img = base64.b64decode(encoded_data)    # Converts string to bytes
+
             files = [
-                ('file', ('image.jpg', img.read(), 'image/jpg'))
+                ('img', ('image.jpg', img, 'image/jpg'))
             ]
 
             response = requests.post(URL, files=files)
+        except Exception as e:
+            abort(400, description=e)
+            print(e)
 
         return response
     

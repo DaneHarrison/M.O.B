@@ -31,9 +31,10 @@ class ProcessImg(Resource):
             abort(400, description='img not found')
         else:
             img = request.files['img']
-            results = logic.runEigenFace(img.read())
+            print(img)
+            #results = logic.runEigenFace(img.read()) # this is two results, req.getMeanVectorBytes()
             # compress data recieved in results into zip file (closest face and mean face)
-            send_file()
+            #send_file()
 
 
 api.add_resource(ProcessImg, '/')
