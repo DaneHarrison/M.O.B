@@ -6,8 +6,7 @@
 # --------------------------------
 from flask import Flask, request, jsonify, render_template, Response, abort
 from flask_restful import Resource, Api
-import json, requests, os, io, base64
-from werkzeug.utils import secure_filename
+import json, requests, base64
 
 HOST = 'localhost'              # The front servers address
 PORT = 5000                     # The front servers port

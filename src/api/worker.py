@@ -7,9 +7,9 @@
 #
 # NOTE: all workers should be started from inside the src directory
 # --------------------------------
-from flask import Flask, request, jsonify, abort, send_file
+from flask import Flask, request, jsonify, abort
 from flask_restful import Resource, Api
-import sys, json, base64, numpy, requests, os, base64
+import sys, base64, os, base64
 
 sys.path.append(os.getcwd())
 from logic.worker.logic import Logic
