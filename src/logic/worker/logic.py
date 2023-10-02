@@ -20,7 +20,7 @@ class Logic:
         self.faceQuerier = FaceQueries()
         self.logQuerier = LogQueries()
 
-        self.connToLogs = logs.connect()
+        self.connToLogs = self.logs.connect()
         self.faceConns = [
             self.dbA.connect(),
             self.dbB.connect(),

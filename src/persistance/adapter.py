@@ -26,7 +26,7 @@ class Adapter:
         user: str = "postgres",
         pw: str = "password",
     ):
-        self.dbURL: str = f"postgresql://{user}:{pw}@{addr}:{int(port)}/{db}"
+        self.dbURL: str = f"postgresql://user:password@{addr}:{int(port)}/{db}"
         self.engine: sq.engine.base.Engine = sq.create_engine(self.dbURL)
         self.conn: sq.engine.base.Connection = self.connect()
         atexit.register(self.cleanup)  # Ensures that connections eventually closed

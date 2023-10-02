@@ -11,7 +11,7 @@ from flask import Flask, request, jsonify, abort, send_file
 from flask_restful import Resource, Api
 import sys, json, base64, numpy, requests, os
 
-os.chdir('../')
+# os.chdir('../')
 sys.path.append(os.getcwd())
 from logic.worker.logic import Logic
 
