@@ -30,7 +30,9 @@ echo logs db running
 
 REM build react
 cd %rootDir%
-start cmd /k "cd .\src\presentation\src && npm run build"
+start cmd /k "cd .\src\presentation && npm install && exit"
+cd %rootDir%
+start cmd /k "cd .\src\presentation\src && npm run build && exit"
 
 REM Seed the db
 cd %rootDir%\src\persistance\seed
