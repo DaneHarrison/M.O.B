@@ -11,6 +11,7 @@
 # --------------------------------
 from persistance.faceQueries import FaceQueries
 from typing import List, Optional
+from collections import namedtuple
 import sqlalchemy as sq
 import numpy as np
 
@@ -29,8 +30,8 @@ class EigRequest:
 
 
     def __init__(self):
-        self.e_vectors = json.load(open(Request.MEAN_VECTOR_LOCATION, 'r'))
-        self.mean_vector = json.load(open(Request.MEAN_VECTOR_LOCATION, 'r'))
+        self.e_vectors = json.load(open(EigRequest.E_VECTOR_LOCATION, 'r'))
+        self.mean_vector = json.load(open(EigRequest.MEAN_VECTOR_LOCATION, 'r'))
 
         self.mean_vector_bytes = np.array(self.mean_vector)
         self.mean_vector_bytes = np.reshape(img, (80, 70))
@@ -40,14 +41,14 @@ class EigRequest:
     def getMeanVectorBytes(self) -> Optional[bytes]:
         return self.mean_vector_bytes
 
-    def prepareInput(self, img: bytes) -> np.array[np.uint8]:
+    def prepareInput(self, img: bytes) -> np.array:
         img = np.frombuffer(img, np.uint8)
         img = cv2.imdecode(img, cv2.IMREAD_GRAYSCALE)
         img = cv2.resize(img, (EigRequest.IMG_WIDTH, EigRequest.IMG_HEIGHT))
 
         return img
     
-    def compute_image_vector(self, img: np.array[np.uint8]) -> np.array[np.float64]:
+    def compute_image_vector(self, img: np.array) -> np.array:
         img_col = np.array(img, dtype='float64').flatten()                      # Flatten the input image into a vector
         mean_vector = np.reshape(self.mean_vector, (EigRequest.NUM_PIXELS, 1))  # Ensures the vector is registered correctly 
         img_col = np.reshape(img_col, (EigRequest.NUM_PIXELS, 1))               # Ensures the image is registered correctly
@@ -57,7 +58,7 @@ class EigRequest:
 
         return processed_image        
 
-    def mapDB(self, faceConns: List[sq.engine.Connection], querier: FaceQueries) -> List[EigRequest.MapResult]:
+    def mapDB(self, faceConns: List[sq.engine.Connection], querier: FaceQueries) -> List[namedtuple]:
         results = []
 
         for conn in faceConns:
@@ -67,16 +68,16 @@ class EigRequest:
 
         return results
 
-    def reduceDB(self, bestMapping: EigRequest.MapResult):
+    def reduceDB(self, bestMapping: namedtuple) -> Optional[namedtuple]:
         reduceResults = self.queries.reduceDB(bestMapping)
         reduceResults = EigRequest.ReduceResults(Photo=reduceResults['Photo'])
 
         return reduceResults
 
-    def chooseBest(self) -> Optional[MapResult]: 
+    def chooseBest(self) -> Optional[namedtuple]: 
         return min(mappings, key=lambda x: x['Distance'], default=None)
 
-    def prepareOutput(self, img: np.array[np.float64]) -> Optional[bytes]:
+    def prepareOutput(self, img: np.array) -> Optional[bytes]:
         successful, img = cv2.imencode('.jpg', img)
         results = None
 
