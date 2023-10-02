@@ -90,3 +90,8 @@ html {
 .keepTall {
     height: 500px;
 }
+
+.welcomeMsg {
+    text-align: center;
+    color: gold;    
+}

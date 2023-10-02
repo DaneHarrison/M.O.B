@@ -11,7 +11,6 @@ from flask import Flask, request, jsonify, abort, send_file
 from flask_restful import Resource, Api
 import sys, json, base64, numpy, requests, os, base64
 
-# os.chdir('../')
 sys.path.append(os.getcwd())
 from logic.worker.logic import Logic
 
@@ -26,30 +25,22 @@ logic = Logic()
 
 class ProcessImg(Resource):
     def post(self,):
+        response = None
         
         if 'img' not in request.files:
             abort(400, description='img not found')
         else:
             img = request.files['img']
-            img_bytes = None
+            results = logic.runEigenFace(img.read())
             
-            with open('a.jpg', 'rb') as image_file:
-                image_bytes = image_file.read()
-            
-            static = {
-                'a': str(base64.b64encode(image_bytes)),
-                'b': str(base64.b64encode(image_bytes)),
-                'c': str(base64.b64encode(image_bytes))
-            }
-            
-            try :
-                results = logic.runEigenFace(img.read()) # this is two results, req.getMeanVectorBytes()
-                if results:
-                    print('works')
-            except Exception as e:
-                print(e)
-
-            return jsonify(static)
+            if results:
+                response = {
+                    'name': results.Name,
+                    'photo': str(base64.b64encode(results.Photo)),
+                    'meanFace': str(base64.b64encode(results.MeanFace))
+                }
+    
+        return jsonify(response)
 
 
 api.add_resource(ProcessImg, '/')

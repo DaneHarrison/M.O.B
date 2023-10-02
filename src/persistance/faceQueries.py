@@ -53,16 +53,16 @@ class FaceQueries:
             - {Name: string, Photo: bytes} 
         """
         # ID=mapResults['ID'], Dist=mapResults['Dist'], Conn=conn
-        name = None     # Default value incase the user specified could not be found
-        photo = None    # Default value incase the uesr specified could not be found
+        reduceResults = None
 
         query = sq.text(f'SELECT user_name, photo FROM public.user_faces WHERE id = {bestMapping[0]}')
-        results = bestMapping[2].execute(query)
+        results = bestMapping.Conn.execute(query)
         results = results.fetchall()
         results = results[0]    # get first row
 
         if results:
-            name = results[0]
-            photo = results[1]
+            reduceResults = {}
+            reduceResults['Name'] = results[0]
+            reduceResults['Photo'] = results[1]
 
-        return {'Name': name, 'Photo': photo}
+        return reduceResults

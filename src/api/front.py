@@ -50,9 +50,9 @@ class Index(Resource):
             workerResponse = workerResponse.json()
 
             response = {
-                'a': workerResponse['a'],
-                'b': workerResponse['b'],
-                'c': workerResponse['c']
+                'name': workerResponse['name'],
+                'photo': workerResponse['photo'],
+                'meanFace': workerResponse['meanFace']
             }
 
         except Exception as e:

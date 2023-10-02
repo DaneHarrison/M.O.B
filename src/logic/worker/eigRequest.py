@@ -17,10 +17,11 @@ import numpy as np
 
 import json, sys, cv2
 
+MapResult = namedtuple('MapResult', ['ID', 'Dist', 'Conn'])
+ReduceResult = namedtuple('ReduceResult', ['Name', 'Photo'])
 
 class EigRequest:
-    MapResult = namedtuple('MapResult', ['ID', 'Dist', 'Conn'])
-    ReduceResult = namedtuple('ReduceResult', ['Photo'])
+
 
     E_VECTOR_LOCATION = './logic/worker/data/eVectors.json'      # The location of the eVectors file
     MEAN_VECTOR_LOCATION = './logic/worker/data/meanVector.json' # The location of the meanVector file
@@ -34,21 +35,21 @@ class EigRequest:
         self.mean_vector = json.load(open(EigRequest.MEAN_VECTOR_LOCATION, 'r'))
 
         self.mean_vector_bytes = np.array(self.mean_vector)
-        self.mean_vector_bytes = np.reshape(self.mean_vector_bytes  , (80, 70))
+        self.mean_vector_bytes = np.reshape(self.mean_vector_bytes, (80, 70))
         self.mean_vector_bytes = self.prepareOutput(self.mean_vector_bytes)
 
 
     def getMeanVectorBytes(self) -> Optional[bytes]:
         return self.mean_vector_bytes
 
-    def prepareInput(self, img: bytes) -> np.array:
+    def prepareInput(self, img: bytes) -> np.ndarray[np.uint8]:
         img = np.frombuffer(img, np.uint8)
         img = cv2.imdecode(img, cv2.IMREAD_GRAYSCALE)
         img = cv2.resize(img, (EigRequest.IMG_WIDTH, EigRequest.IMG_HEIGHT))
 
         return img
     
-    def compute_image_vector(self, img: np.array) -> np.array:
+    def compute_image_vector(self, img: np.ndarray[np.uint8]) -> np.ndarray[np.float64]:
         img_col = np.array(img, dtype='float64').flatten()                      # Flatten the input image into a vector
         mean_vector = np.reshape(self.mean_vector, (EigRequest.NUM_PIXELS, 1))  # Ensures the vector is registered correctly 
         img_col = np.reshape(img_col, (EigRequest.NUM_PIXELS, 1))               # Ensures the image is registered correctly
@@ -58,26 +59,28 @@ class EigRequest:
 
         return processed_image        
 
-    def mapDB(self, img: np.array, faceConns, querier: FaceQueries) -> List[namedtuple]:
+    def mapDB(self, img: np.ndarray[np.float64], faceConns, querier: FaceQueries) -> List[MapResult]:
         results = []
 
         for conn in faceConns:
             mapResults = querier.mapDB(conn, img)
-            mapResults = EigRequest.MapResult(ID=mapResults['ID'], Dist=mapResults['Dist'], Conn=conn)
+            mapResults = MapResult(ID=mapResults['ID'], Dist=mapResults['Dist'], Conn=conn)
             results.append(mapResults)
 
         return results
 
-    def chooseBest(self, mappings: List[namedtuple]) -> Optional[namedtuple]: 
-        return min(mappings, key=lambda x: x[1], default=None)
+    def chooseBest(self, mappings: List[MapResult]) -> Optional[ReduceResult]: 
+        return min(mappings, key=lambda x: x.Dist, default=None)
 
-    def reduceDB(self, bestMapping: namedtuple, querier: FaceQueries) -> Optional[namedtuple]:
+    def reduceDB(self, bestMapping: MapResult, querier: FaceQueries) -> Optional[ReduceResult]:
         reduceResults = querier.reduceDB(bestMapping)
-        reduceResults = EigRequest.ReduceResult(Photo=reduceResults['Photo'])
+
+        if reduceResults:
+            reduceResults = ReduceResult(Name=reduceResults['Name'], Photo=reduceResults['Photo'])
 
         return reduceResults
 
-    def prepareOutput(self, img: np.array) -> Optional[bytes]:
+    def prepareOutput(self, img: np.ndarray[np.float64]) -> Optional[bytes]:
         successful, img = cv2.imencode('.jpg', img)
         results = None
 

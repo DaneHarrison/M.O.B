@@ -29,8 +29,7 @@
 - Need to disable CORS
 - Upload distance? name?
 
-- unique constraints should not be put on images
-
+- logs are disabled
 <hr>
 
 ![img](./res/MOB2.0.PNG)

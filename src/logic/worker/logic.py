@@ -3,9 +3,11 @@ from persistance.faceQueries import FaceQueries
 from persistance.logQueries import LogQueries
 from logic.worker.eigRequest import EigRequest
 from typing import Tuple, Optional
+from collections import namedtuple
 from dotenv import load_dotenv
 import os
 
+EigResult = namedtuple('EigResult', ['Name', 'Dist', 'Photo', 'MeanFace'])
 
 class Logic:
     def __init__(self):
@@ -23,7 +25,7 @@ class Logic:
         ]
 
 
-    def runEigenFace(self, img: bytes) -> []:
+    def runEigenFace(self, img: bytes) -> Optional[EigResult]:
         req = EigRequest()
         results = None
 
@@ -33,7 +35,14 @@ class Logic:
             
             mappings = req.mapDB(image_vector, self.faces, self.faceQuerier)
             bestMapping = req.chooseBest(mappings)
-            results = req.reduceDB(bestMapping, self.faceQuerier)
-            results = results[0], req.getMeanVectorBytes()
+            reducedResults = req.reduceDB(bestMapping, self.faceQuerier)
+        
+            if reducedResults:
+                results = EigResult(
+                    Name=reducedResults.Name, 
+                    Dist=bestMapping.Dist, 
+                    Photo=reducedResults.Photo, 
+                    MeanFace=req.getMeanVectorBytes()
+                ) 
 
         return results

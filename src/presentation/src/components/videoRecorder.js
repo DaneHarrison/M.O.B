@@ -17,14 +17,14 @@ export default class VideoRecorder extends React.Component {
 
     componentDidMount() {
         // Get references to the video and canvas after creation then start recording
-        this.setState({ player: document.getElementById('player')})
-        this.setState({ canvas: document.getElementById('canvas')})
+        this.setState({ player: document.getElementById('player')});
+        this.setState({ canvas: document.getElementById('canvas')});
 
         this.startRecording();
     }
 
     async startRecording() {
-        let stream = null
+        let stream = null;
 
         try {
             stream = await navigator.mediaDevices.getUserMedia(this.state.constraints);
@@ -32,7 +32,7 @@ export default class VideoRecorder extends React.Component {
         } 
         catch(error) {
             console.error('[ERROR]: ', error);
-            this.props.disable()
+            this.props.disable();
         }
     }
 
@@ -56,29 +56,28 @@ export default class VideoRecorder extends React.Component {
 
     toggleRecording = () => {
         if(this.state.recording) {
-            this.capture()
+            this.capture();
             this.stopRecording();
 
-            this.state.player.classList.add('hidden')
-            this.state.canvas.classList.remove('hidden')
+            this.state.player.classList.add('hidden');
+            this.state.canvas.classList.remove('hidden');
         }
         else {
-            this.startRecording()
-            this.state.player.classList.remove('hidden')
-            this.state.canvas.classList.add('hidden')    
+            this.startRecording();
+            this.state.player.classList.remove('hidden');
+            this.state.canvas.classList.add('hidden');
         }
 
-        this.setState({recording: !this.state.recording})
+        this.setState({recording: !this.state.recording});
     }
 
     render() {
         return (
             <div class='cameraArea'>
-                <video id="player" class='stream' muted autoPlay></video>
-                <canvas id="canvas" class='stream keepTall shadow hidden'></canvas> 
+                <video id='player' class='stream' muted autoPlay></video>
+                <canvas id='canvas' class='stream keepTall shadow hidden'></canvas> 
 
                 <div class='btnArea'>
-                    <button class='captureBtn' onClick={this.props.upload}>Upload</button> 
                     <button class='captureBtn' onClick={this.toggleRecording}>Capture</button>
                     <button class='captureBtn' onClick={this.props.fetchClosest}>Submit</button>
                 </div>

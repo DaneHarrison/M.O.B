@@ -15,23 +15,28 @@ class LogQueries:
 # A boolean representing if that image has already been used for authentication
 # --------------------------------
     def recordIfNewImage(self, img, conn):
-        query = f'INSERT INTO public.request_history (req_photo) VALUES ({psycopg2.Binary(img)}); COMMIT;'
-        query = query.replace('VALUES (b\'', 'VALUES (\'')
-        isNew = self._isNew(img, conn)
+        # img = psycopg2.Binary(img)
+        # query = f'INSERT INTO public.request_history (req_photo) VALUES ({img}); COMMIT;'
+        # # query = query.replace('VALUES (b\'', 'VALUES (\'')
+        # isNew = self._isNew(img, conn)
 
-        if isNew:
-            query = sq.text(query)
-            conn.execute(query)
+        # if isNew:
+        #     query = sq.text(query)
+        #     conn.execute(query)
+        #     print('good shit')
 
-        return isNew
+        # return isNew
+        return True
 
     def _isNew(self, img, conn):
-        query = f'SELECT id FROM public.request_history  WHERE req_photo = {psycopg2.Binary(img)};'
-        query = query.replace('VALUES (b\'', 'VALUES (\'')
-        query = sq.text(query)
+        # query = f'SELECT id FROM public.request_history WHERE req_photo = {img};'
+        # # query = query.replace('req_photo = b\'', 'req_photo = \'')
+        # query = sq.text(query)
 
-        results = conn.execute(query)
-        results = results.fetchall()
-        isNew = not results
+        # results = conn.execute(query)
+        # results = results.fetchall()
+        # print('first check')
+        # isNew = not results
 
-        return isNew
+        #return isNew
+        return True
