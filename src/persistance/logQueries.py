@@ -1,7 +1,4 @@
 import sqlalchemy as sq
-import psycopg2
-
-
 
 class LogQueries:
     # --------------------------------

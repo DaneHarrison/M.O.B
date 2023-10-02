@@ -2,7 +2,7 @@ from persistance.adapter import Adapter
 from persistance.faceQueries import FaceQueries
 from persistance.logQueries import LogQueries
 from logic.worker.eigRequest import EigRequest
-from typing import Tuple, Optional
+from typing import Optional
 from collections import namedtuple
 from dotenv import load_dotenv
 import os

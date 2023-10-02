@@ -6,15 +6,14 @@
 # --------------------------------
 from flask import Flask, request, jsonify, render_template, Response, abort
 from flask_restful import Resource, Api
-import json, requests, os, io, base64
-from werkzeug.utils import secure_filename
-from flask_cors import CORS
+import json, requests, base64
+
 HOST = 'localhost'              # The front servers address
 PORT = 5000                     # The front servers port
 URL = 'http://localhost:4000/'  # URL where the worker(s) can be reached   
 
 app = Flask(__name__, template_folder='../presentation/build/', static_folder='../presentation/build/static/')   # Flask server instance
-CORS(app)
+
 app.config['UPLOAD_FOLDER'] = './'
 api = Api(app)          # Controls the Flask server API 
 
