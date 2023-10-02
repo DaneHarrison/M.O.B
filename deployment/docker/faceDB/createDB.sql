@@ -21,7 +21,7 @@ my_mins = []
 weights = plpy.execute("SELECT * FROM public.user_faces")
 
 for i in range(len(weights)):
-    curr_weight = weights[i]['userWeight']
+    curr_weight = weights[i]['photo_weight']
     tmp_hold = []
 
     for j in range(len(curr_weight)):
@@ -34,5 +34,5 @@ for i in range(len(weights)):
 my_distance = min(my_mins)
 my_idx = my_mins.index(my_distance)
 
-return (my_idx,my_distance)
+return (my_idx, my_distance)
 $$ LANGUAGE plpython3u;

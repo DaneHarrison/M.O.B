@@ -42,10 +42,14 @@ class ProcessImg(Resource):
                 'c': str(base64.b64encode(image_bytes))
             }
             
+            try :
+                results = logic.runEigenFace(img.read()) # this is two results, req.getMeanVectorBytes()
+                if results:
+                    print('works')
+            except Exception as e:
+                print(e)
+
             return jsonify(static)
-            #results = logic.runEigenFace(img.read()) # this is two results, req.getMeanVectorBytes()
-            # compress data recieved in results into zip file (closest face and mean face)
-            #send_file()
 
 
 api.add_resource(ProcessImg, '/')

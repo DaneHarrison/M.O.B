@@ -8,10 +8,10 @@
 #   - Log database [logDB]:
 #       - This database uses the check_for_prev_entry and add_entry queries
 # --------------------------------
-import psycopg2
+import sqlalchemy as sq
 
 class FaceQueries:
-    def mapDB(self, connection, processed_photo):
+    def mapDB(self, conn, img):
         """
         Maps the processed input photo to the closest users in that database
         
@@ -23,20 +23,25 @@ class FaceQueries:
         - Dictionary containing the details of the closest mapped results 
             - {ID: int Distance: float}
         """
-        cur = connection.cursor()
+        img = img.flatten()
+        img = img.tolist()
+        query = sq.text(f'SELECT find_min(ARRAY{img})')
 
-        # Perform the query
-        cur.execute(f'SELECT find_min(ARRAY{processed_photo})')
-        results = cur.fetchall()
-        cur.close()
+        # Returns results similar to: [('(48,7444.449291597461)',)]
+        results = conn.execute(query)
+        results = results.fetchall()
 
-        # Load the data (custom datatype returned from a database script)
-        rowID = int(results[0][0][1:-1].split(',')[0])
-        distance = float(results[0][0][1:-1].split(',')[1])
+        # Fetches the inner tuple then splits the two values
+        results = '' + results[0][0]
+        results = results.split(',')
 
-        return {'ID': rowID, 'Distance': distance}
+        # Formats both values to integers and floats respectively
+        faceID = int(results[0].replace('(', ''))
+        dist = float(results[1].replace(')', ''))
 
-    def reduceDB(self, query_details):
+        return {'ID': faceID, 'Dist': dist}
+
+    def reduceDB(self, bestMapping):
         """
         Fetches the name and photo of the closest user once they are determined as such
 
@@ -47,18 +52,17 @@ class FaceQueries:
         - Dictionary of the closest user 
             - {Name: string, Photo: bytes} 
         """
+        # ID=mapResults['ID'], Dist=mapResults['Dist'], Conn=conn
         name = None     # Default value incase the user specified could not be found
         photo = None    # Default value incase the uesr specified could not be found
 
-        # Perform the query
-        cur = query_details["DB"].cursor()
-        cur.execute(f'SELECT * FROM public.user_faces WHERE id = {query_details["ID"]}')
-        results = cur.fetchall()
-        cur.close()
+        query = sq.text(f'SELECT user_name, photo FROM public.user_faces WHERE id = {bestMapping[0]}')
+        results = bestMapping[2].execute(query)
+        results = results.fetchall()
+        results = results[0]    # get first row
 
-        # Load the results (there will only ever be one)
-        for result in results:
-            name = result[1]
-            photo = result[3]
+        if results:
+            name = results[0]
+            photo = results[1]
 
         return {'Name': name, 'Photo': photo}

@@ -54,3 +54,10 @@ class Adapter:
         """
         if self.conn is not None:
             self.disconnect()
+
+    def execute(self, query):
+        """
+        Purpose:
+        Execute a query on the database
+        """
+        return self.conn.execute(query)

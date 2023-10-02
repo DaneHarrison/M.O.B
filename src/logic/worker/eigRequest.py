@@ -22,8 +22,8 @@ class EigRequest:
     MapResult = namedtuple('MapResult', ['ID', 'Dist', 'Conn'])
     ReduceResult = namedtuple('ReduceResult', ['Photo'])
 
-    E_VECTOR_LOCATION = './data/eVectors.json'      # The location of the eVectors file
-    MEAN_VECTOR_LOCATION = './data/meanVector.json' # The location of the meanVector file
+    E_VECTOR_LOCATION = './logic/worker/data/eVectors.json'      # The location of the eVectors file
+    MEAN_VECTOR_LOCATION = './logic/worker/data/meanVector.json' # The location of the meanVector file
     NUM_PIXELS = 5600   # The expected number of total pixels
     IMG_WIDTH = 70      # The expected width
     IMG_HEIGHT = 80     # The expected height
@@ -34,7 +34,7 @@ class EigRequest:
         self.mean_vector = json.load(open(EigRequest.MEAN_VECTOR_LOCATION, 'r'))
 
         self.mean_vector_bytes = np.array(self.mean_vector)
-        self.mean_vector_bytes = np.reshape(img, (80, 70))
+        self.mean_vector_bytes = np.reshape(self.mean_vector_bytes  , (80, 70))
         self.mean_vector_bytes = self.prepareOutput(self.mean_vector_bytes)
 
 
@@ -58,24 +58,24 @@ class EigRequest:
 
         return processed_image        
 
-    def mapDB(self, faceConns: List[sq.engine.Connection], querier: FaceQueries) -> List[namedtuple]:
+    def mapDB(self, img: np.array, faceConns, querier: FaceQueries) -> List[namedtuple]:
         results = []
 
         for conn in faceConns:
-            mapResults = querier.mapDB(conn, self.image_vector)
+            mapResults = querier.mapDB(conn, img)
             mapResults = EigRequest.MapResult(ID=mapResults['ID'], Dist=mapResults['Dist'], Conn=conn)
             results.append(mapResults)
 
         return results
 
-    def reduceDB(self, bestMapping: namedtuple) -> Optional[namedtuple]:
-        reduceResults = self.queries.reduceDB(bestMapping)
-        reduceResults = EigRequest.ReduceResults(Photo=reduceResults['Photo'])
+    def chooseBest(self, mappings: List[namedtuple]) -> Optional[namedtuple]: 
+        return min(mappings, key=lambda x: x[1], default=None)
+
+    def reduceDB(self, bestMapping: namedtuple, querier: FaceQueries) -> Optional[namedtuple]:
+        reduceResults = querier.reduceDB(bestMapping)
+        reduceResults = EigRequest.ReduceResult(Photo=reduceResults['Photo'])
 
         return reduceResults
-
-    def chooseBest(self) -> Optional[namedtuple]: 
-        return min(mappings, key=lambda x: x['Distance'], default=None)
 
     def prepareOutput(self, img: np.array) -> Optional[bytes]:
         successful, img = cv2.imencode('.jpg', img)

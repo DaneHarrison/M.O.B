@@ -1,4 +1,6 @@
+import sqlalchemy as sq
 import psycopg2
+
 
 
 class LogQueries:
@@ -12,17 +14,24 @@ class LogQueries:
 # Returns:
 # A boolean representing if that image has already been used for authentication
 # --------------------------------
-    def recordIfNewImage(self, img, connection):
-        successful = False
-        results = None
+    def recordIfNewImage(self, img, conn):
+        query = f'INSERT INTO public.request_history (req_photo) VALUES ({psycopg2.Binary(img)}); COMMIT;'
+        query = query.replace('VALUES (b\'', 'VALUES (\'')
+        isNew = self._isNew(img, conn)
 
-        try:
-            cur = connection.cursor()
-            cur.execute(f'INSERT INTO public.request_history (req_photo) VALUES ({psycopg2.Binary(img)}); COMMIT;')
-            cur.close()
+        if isNew:
+            query = sq.text(query)
+            conn.execute(query)
 
-            results = True
-        except Exception as e:
-            print(f'[ERROR]: {e}')
+        return isNew
 
-        return results
+    def _isNew(self, img, conn):
+        query = f'SELECT id FROM public.request_history  WHERE req_photo = {psycopg2.Binary(img)};'
+        query = query.replace('VALUES (b\'', 'VALUES (\'')
+        query = sq.text(query)
+
+        results = conn.execute(query)
+        results = results.fetchall()
+        isNew = not results
+
+        return isNew
