@@ -28,11 +28,6 @@ REM run the logs docker container
 "docker" "run" "-d" "--name" "logs" "-p" "5435:5432" "logs"
 echo logs db running
 
-REM build react
-cd %rootDir%
-start /wait cmd /k "cd .\src\presentation && npm install && npm run build && exit"
-echo React Built
-
 REM Seed the db
 cd %rootDir%\src\persistance\seed
 "python" "seed.py"
