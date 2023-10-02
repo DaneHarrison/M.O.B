@@ -55,8 +55,6 @@ class Index(Resource):
                 'c': workerResponse['c']
             }
 
-            print(workerResponse['a'])
-
         except Exception as e:
             print(e)
             abort(400, description=e)

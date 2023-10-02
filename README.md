@@ -28,7 +28,6 @@
 
 - Need to disable CORS
 - Upload distance? name?
-- fix hard coded adapter variables
 
 <hr>
 
