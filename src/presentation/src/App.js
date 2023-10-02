@@ -1,8 +1,8 @@
-import VideoRecorder from './components/videoRecorder'
+import VideoRecorder from './components/videoRecorder';
 import logo from './100_10.jpg';
-import React from 'react'
-import './style/App.css'
+import React from 'react';
 import axios from 'axios';
+import './style/App.css'
 
 export default class App extends React.Component {
     constructor(props) {
@@ -10,10 +10,8 @@ export default class App extends React.Component {
 
         this.state = {
             recordingPerms: true,
-            main: logo, // default image to show incase recording permissions are not granted
-            left: null,
-            middle: null,
-            right: null
+            main: logo,
+            right: logo
         }
     }
 
@@ -23,12 +21,13 @@ export default class App extends React.Component {
     }
 
     fetchClosest = () => {
+        let data = null;
+
         axios.post('http://localhost:5000/', { img: this.state.main })
             .then(response => {
-                console.log(response.data); // Handle the server response
-                //     //unzip res
-                //     //updatePhoto
-                //     //updatePhoto
+                data = response.data
+                this.setState({ left: this.loadPythonJSONImg(data.meanFace) })
+                this.setState({ right: this.loadPythonJSONImg(data.bestMapping) })
             })
             .catch(error => {
                 console.error(error);
@@ -36,21 +35,27 @@ export default class App extends React.Component {
         );
     }
 
+    loadPythonJSONImg(base64JSONImg) {
+        base64JSONImg = base64JSONImg.replace('\"', '')
+        base64JSONImg = base64JSONImg.replace('\'', '')
+        base64JSONImg = base64JSONImg.substring(1, base64JSONImg.length - 1);
+        base64JSONImg = 'data:image/jpeg;base64,' + base64JSONImg
+
+        return base64JSONImg
+    }
+
     updatePhoto = (posi, photo) => {
         switch (posi) {
             case 'main':
                 this.setState({ main: photo })
-                //
-                //
                 break;
 
             case 'left':
-                break;
-
-            case 'middle':
+                this.setState({ main: photo })
                 break;
 
             case 'right':
+                this.setState({ main: photo })
                 break;
         }
     }
@@ -76,9 +81,9 @@ export default class App extends React.Component {
                             </div>
                         </div>}
                     <div class='pictureHolder'>
-                        <img src={logo} class='shadow'></img>
-                        <img src={logo} class='middle shadow'></img>
-                        <img src={logo} class='shadow'></img>
+                        <img src={this.state.left} class='shadow'></img>
+                        <img class='middle shadow invisible'></img>
+                        <img src={this.state.right} class='shadow'></img>
                     </div>
                 </div>
             </div>

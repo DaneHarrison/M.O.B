@@ -9,7 +9,7 @@
 # --------------------------------
 from flask import Flask, request, jsonify, abort, send_file
 from flask_restful import Resource, Api
-import sys, json, base64, numpy, requests, os
+import sys, json, base64, numpy, requests, os, base64
 
 # os.chdir('../')
 sys.path.append(os.getcwd())
@@ -31,7 +31,18 @@ class ProcessImg(Resource):
             abort(400, description='img not found')
         else:
             img = request.files['img']
-            print(img)
+            img_bytes = None
+            
+            with open('a.jpg', 'rb') as image_file:
+                image_bytes = image_file.read()
+            
+            static = {
+                'a': str(base64.b64encode(image_bytes)),
+                'b': str(base64.b64encode(image_bytes)),
+                'c': str(base64.b64encode(image_bytes))
+            }
+            
+            return jsonify(static)
             #results = logic.runEigenFace(img.read()) # this is two results, req.getMeanVectorBytes()
             # compress data recieved in results into zip file (closest face and mean face)
             #send_file()

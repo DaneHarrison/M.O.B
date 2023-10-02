@@ -35,6 +35,8 @@ class Index(Resource):
         return Response(render_template('index.html'), mimetype='text/html')
     
     def post(self,):
+        response = None
+
         try:
             imgData = request.json.get('img')       
             _, encoded_data = imgData.split(',', 1) # Remove meta data
@@ -44,12 +46,22 @@ class Index(Resource):
                 ('img', ('image.jpg', img, 'image/jpg'))
             ]
 
-            response = requests.post(URL, files=files)
-        except Exception as e:
-            abort(400, description=e)
-            print(e)
+            workerResponse = requests.post(URL, files=files)
+            workerResponse = workerResponse.json()
 
-        return response
+            response = {
+                'a': workerResponse['a'],
+                'b': workerResponse['b'],
+                'c': workerResponse['c']
+            }
+
+            print(workerResponse['a'])
+
+        except Exception as e:
+            print(e)
+            abort(400, description=e)
+
+        return jsonify(response)
     
 
 #api.add_resource(ProcessImg, '/')

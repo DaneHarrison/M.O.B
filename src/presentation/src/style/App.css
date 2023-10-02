@@ -74,7 +74,11 @@ html {
 }
 
 .hidden {
-    display: none
+    display: none;
+}
+
+.invisible {
+    visibility: hidden;
 }
 
 .stream {
