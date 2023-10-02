@@ -6,10 +6,15 @@
 <br>
 <br>
 
-<div align="right">
-<img src='.github/img/districtsAndLabels.png' width="500"/>
+<div display=flexbox>
+<img src='./res/startup.PNG' width="350"/>
+<img src='./res/arrow.png' width="90" height="50px"/>
+<img src='./res/end.PNG' width="350"/>
 </div>
 </div>
+
+<br>
+<br>
 
 ## Overview
 - [Algorithms](#algorithms)
@@ -27,8 +32,6 @@ MapReduce is a powerful algorithm designed to accelerate large-scale computation
 - **In the map phase**, the algorithm attempts to identify the most relevant information sort of like an initial data selection phase.
 
 - **In the reduce phase**, this is where the algorithm perform the necessary computations. That is, it processes and computes results previously selected from the mapping phase.
-
-<img src='./'>
 
 ### Eigenface
 Eigenface algorithm is a facial recognition technique that reduces the complexity of facial images and extracts the most important features, called "eigenfaces." These eigenfaces are a set of orthogonal (uncorrelated) images that represent variations in facial features such as lighting, expressions, and poses.
