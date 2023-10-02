@@ -14,15 +14,12 @@ from typing import List, Optional
 from collections import namedtuple
 import sqlalchemy as sq
 import numpy as np
-
 import json, sys, cv2
 
 MapResult = namedtuple('MapResult', ['ID', 'Dist', 'Conn'])
 ReduceResult = namedtuple('ReduceResult', ['Name', 'Photo'])
 
 class EigRequest:
-
-
     E_VECTOR_LOCATION = './logic/worker/data/eVectors.json'      # The location of the eVectors file
     MEAN_VECTOR_LOCATION = './logic/worker/data/meanVector.json' # The location of the meanVector file
     NUM_PIXELS = 5600   # The expected number of total pixels

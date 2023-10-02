@@ -5,7 +5,7 @@
 # Each request should include an image of a face which the worker than attempts to match against the available databases
 # Using EigRequest, after these processes are completed, the image is sent as a response
 #
-# NOTE: all workers should be started from inside the worker directory
+# NOTE: all workers should be started from inside the src directory
 # --------------------------------
 from flask import Flask, request, jsonify, abort, send_file
 from flask_restful import Resource, Api

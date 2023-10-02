@@ -1,27 +1,13 @@
-# --------------------------------
-# queries (class)
-#
-# Queries hold different requests we'd wouldlike to make to various database
-#   - Face databases [DBA, DBB, DBC]:
-#       - These databases use the mapDB and reduceDB queries
-#
-#   - Log database [logDB]:
-#       - This database uses the check_for_prev_entry and add_entry queries
-# --------------------------------
+from persistance.adapter import Adapter
+from collections import namedtuple
+from typing import Dict, Optional
 import sqlalchemy as sq
+import numpy as np
 
 class FaceQueries:
-    def mapDB(self, conn, img):
+    def mapDB(self, conn: Adapter, img: np.ndarray[np.float64]) -> Dict[int, float]:
         """
-        Maps the processed input photo to the closest users in that database
-        
-        Parameters:
-        - connection: A connection to the database we would like to query 
-        - processed_photo: Holds the processed input image to be used for comparison (size 5600x1)
-        
-        Returns:
-        - Dictionary containing the details of the closest mapped results 
-            - {ID: int Distance: float}
+        Maps the input to the closest users in a database
         """
         img = img.flatten()
         img = img.tolist()
@@ -41,20 +27,11 @@ class FaceQueries:
 
         return {'ID': faceID, 'Dist': dist}
 
-    def reduceDB(self, bestMapping):
+    def reduceDB(self, bestMapping: namedtuple) -> Dict[Optional[str], Optional[bytes]]:
         """
         Fetches the name and photo of the closest user once they are determined as such
-
-        Parameters:
-        - query_details: A dictionary that holds an ID integer (ID) and database connection (DB) according to the smallest distance
-        
-        Returns
-        - Dictionary of the closest user 
-            - {Name: string, Photo: bytes} 
         """
-        # ID=mapResults['ID'], Dist=mapResults['Dist'], Conn=conn
         reduceResults = None
-
         query = sq.text(f'SELECT user_name, photo FROM public.user_faces WHERE id = {bestMapping[0]}')
         results = bestMapping.Conn.execute(query)
         results = results.fetchall()

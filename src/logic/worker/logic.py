@@ -29,7 +29,7 @@ class Logic:
         req = EigRequest()
         results = None
 
-        if img and self.logQuerier.recordIfNewImage(img, self.logs):
+        if img:
             img = req.prepareInput(img)
             image_vector = req.compute_image_vector(img)
             
