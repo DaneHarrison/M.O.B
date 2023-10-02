@@ -2,12 +2,12 @@
 
 REM Run the trainin.py file to train the Model
 set rootDir=%cd%
-cd %rootDir%\src\logic\trainingServer
+cd %rootDir%\src\logic\training
 "python" "training.py"
 echo Model successfully Trained!
 
 REM Build docker mob
-cd %rootDir%\src\deployment\docker\faceDB
+cd %rootDir%\deployment\docker\faceDB
 "docker" "build" "-t" "mob" "."
 echo Successfully built docker mob 
 
@@ -20,7 +20,7 @@ echo mobB running
 echo mobC running
 
 REM build the log docker
-cd %rootDir%\src\deployment\docker\logDB
+cd %rootDir%\deployment\docker\logDB
 "docker" "build" "-t" "logs" "."
 echo Successfully built docker logs
 
@@ -30,11 +30,11 @@ echo logs db running
 
 REM launch worker
 cd %rootDir%
-start cmd /k  "cd .\src\logic && python front.py"
+start cmd /k  "cd .\src\api && python front.py"
 
 REM launch front
 cd %rootDir%
-start cmd /k  "cd .\src\logic\worker && python worker.py"
+start cmd /k  "cd .\src\api && python worker.py"
 
 REM Seed the db
 cd %rootDir%\src\persistance\seed

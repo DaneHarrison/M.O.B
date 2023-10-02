@@ -1,16 +1,14 @@
-#==============================================
-# seed.py (class)
-#
-# seed.py is responsible for connecting to each 
-# database and seeding the initial data.
-#==============================================
-
 import psycopg2
 import json
 from dotenv import load_dotenv
 
 class seedDB:
     def __init__(self, testPath="") -> None:
+        '''
+        seed (class)
+
+        Responsible for connecting to each database and seeding the initial data
+        '''
         load_dotenv()           # Loads the .env file
 
         #location of the random names
@@ -23,7 +21,7 @@ class seedDB:
         self.photo_path_location = testPath + 'fileManifest.json'
 
         #location of the training images
-        self.training_photo_location = testPath + '../../../res/trainingData/'
+        self.training_photo_location = testPath + '../../../data/trainingData/'
 
         #load all of the names
         with open(self.names_location, 'r') as names_file:
@@ -39,18 +37,15 @@ class seedDB:
 
         self.name_idx = 0
 
-    #=================================================
-    #run_seed(start, end, port)
-    #
-    #start: starting index of the photos
-    #end: ending index of the phots
-    #port: what port to connect on
-    #
-    #This function connects to each of the 3 databases
-    #and seed them with default data
-    #=================================================
     def run_seed(self, start, end, port):
+        '''
+        Connects to each of the databases and seeds them with default data
 
+        Parameters:
+            start (int): starting index of the photos
+            end (int): ending index of the photos
+            port (int): connection port for the database
+        '''
         #connection string
         con = psycopg2.connect(
             host='localhost',
@@ -80,7 +75,7 @@ class seedDB:
             my_photo = psycopg2.Binary(my_photo.read())
 
             #build the insert query
-            my_msg = f"BEGIN; insert into public.\"UserFaces\" values ({id_start}, '{self.names[self.name_idx]}', ARRAY{my_weights}, {my_photo}); COMMIT;"
+            my_msg = f"BEGIN; insert into public.user_faces values ({id_start}, '{self.names[self.name_idx]}', ARRAY{my_weights}, {my_photo}); COMMIT;"
             id_start += 1
             
             #execute the insert query

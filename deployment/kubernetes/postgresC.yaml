@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-c-service
+  labels:
+    app: postgres-c-service
+spec:
+  selector:
+    app: postgres-c
+  ports:
+  - name: postgres-c  
+    port: 5434
+    targetPort: 5434
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-c
+spec:
+  selector:
+    matchLabels:
+      app: postgres-c-service
+  serviceName: postgres-c-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres-c-service
+    spec:
+      containers:
+      - name: postgres-c
+        image: mob
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5434
