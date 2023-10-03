@@ -74,3 +74,5 @@ Eigenface algorithm is a facial recognition technique that reduces the complexit
     - ```cd ../../```
 3. Run setup.bat from the project directory
     - ```setup.bat``` 
+4. Connecting
+    - Open up a browser and go to localhost:5000
